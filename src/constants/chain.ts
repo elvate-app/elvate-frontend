@@ -1,0 +1,2 @@
+export const NETWORK_BSCT = 97;
+export const NETWORK_MATIC_MUMBAI_TESTNET = 80001;
