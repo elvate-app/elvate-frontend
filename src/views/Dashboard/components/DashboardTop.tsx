@@ -67,8 +67,8 @@ const DashboardTop = () => {
 
   return (
     <Grid container columns={{ xs: 2, md: 2 }} marginTop={{ xs: 0, md: 1 }}>
-      <PairsContainer item xs={2} md={1}>
-        <H6 fontWeight={"bold"} margin={2} marginBottom={1}>
+      <PairsContainer item xs={2} md={1} paddingRight={1}>
+        <H6 fontWeight={"bold"} marginTop={2} marginBottom={1}>
           Top Pairs
         </H6>
         {allTopPairs?.map((pair: any, index: number) => (
@@ -89,8 +89,8 @@ const DashboardTop = () => {
         ))}
         <ButtonViewMore sx={{ display: { xs: "block", md: "none" } }} />
       </PairsContainer>
-      <PairsContainer item xs={2} md={1}>
-        <H6 fontWeight={"bold"} margin={2} marginBottom={1}>
+      <PairsContainer item xs={2} md={1} paddingLeft={1}>
+        <H6 fontWeight={"bold"} marginTop={2} marginBottom={1}>
           Next Triggers
         </H6>
         {allPairsTriggers?.map((pair: ElvatePair, index: number) => (

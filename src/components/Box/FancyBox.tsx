@@ -11,9 +11,9 @@ function animation(palette: PaletteColor) {
 }
 
 const Root = styled(Flex)`
-  padding-left: ${(props) => props.theme.spacing(2)};
-  padding-right: ${(props) => props.theme.spacing(2)};
-  padding-bottom: ${(props) => props.theme.spacing(4)};
+  padding-left: ${(props) => props.theme.spacing(1)};
+  padding-right: ${(props) => props.theme.spacing(1)};
+  padding-bottom: ${(props) => props.theme.spacing(2)};
 `;
 
 const StyledRootBox = styled(Box)`

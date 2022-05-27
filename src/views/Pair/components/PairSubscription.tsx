@@ -55,7 +55,7 @@ const PairSubscription = ({ pair }: SubscriptionProps) => {
 
   return (
     <div>
-      <Card padding={1} marginTop={2} margin={1}>
+      <Card padding={1} marginTop={2}>
         <MainContainer>
           <PairTokenDescription token={tokenIn} />
           <StyledDoubleArrow />

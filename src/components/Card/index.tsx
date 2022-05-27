@@ -9,8 +9,6 @@ const RootContent = styled(Box)`
 const StyledBox = styled((props: { hover?: boolean } & BoxProps) => (
   <Box {...props} />
 ))`
-  margin-left: ${({ theme }) => theme.spacing(1)};
-  margin-right: ${({ theme }) => theme.spacing(1)};
   background-color: ${({ theme }) => theme.palette.background.default};
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
   border-radius: 5px;

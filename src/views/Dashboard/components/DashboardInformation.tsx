@@ -71,7 +71,7 @@ const DashboardInformation = () => {
 
   return (
     <>
-      <H6 fontWeight={"bold"} margin={2} marginBottom={1}>
+      <H6 fontWeight={"bold"} marginTop={2} marginBottom={1}>
         My Informations
       </H6>
       <Grid container columns={{ xs: 4, lg: 8 }} spacing={{ lg: 4 }}>

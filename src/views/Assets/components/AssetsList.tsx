@@ -54,8 +54,8 @@ const AssetsList = () => {
 
   return (
     <>
-      <Grid container columns={{ xs: 2, md: 3 }} alignItems="center">
-        <Grid item xs={2} md={1} padding={1} marginBottom={2}>
+      <Grid container columns={{ xs: 2, md: 3 }}>
+        <Grid item xs={2} md={1} marginBottom={2}>
           <InputSearch
             placeholder="Search by name, address..."
             onChange={(e) => setSearch(e.target.value)}
@@ -107,7 +107,7 @@ const AssetsList = () => {
         </Grid>
       </Grid>
 
-      <H6 fontWeight={"bold"} margin={2} marginBottom={1} marginTop={0}>
+      <H6 fontWeight={"bold"} marginBottom={1} marginTop={0}>
         Supported Assets
       </H6>
 
@@ -134,7 +134,7 @@ const AssetsList = () => {
         </FlexCenter>
       )}
 
-      <H6 fontWeight={"bold"} margin={2} marginBottom={1} marginTop={2}>
+      <H6 fontWeight={"bold"} marginBottom={1} marginTop={2}>
         Custom Assets
       </H6>
 

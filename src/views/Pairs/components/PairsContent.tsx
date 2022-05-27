@@ -88,7 +88,7 @@ export const PairsContent = () => {
   return (
     <>
       <Grid container columns={{ xs: 2, md: 3 }} alignItems="center">
-        <Grid item xs={2} md={1} padding={1} marginBottom={{ xs: 0, md: 2 }}>
+        <Grid item xs={2} md={1} marginBottom={{ xs: 0, md: 2 }}>
           <InputSearch
             placeholder="Search by token, address..."
             onChange={(e) => setSearch(e.target.value)}
@@ -96,7 +96,7 @@ export const PairsContent = () => {
             fullWidth
           />
         </Grid>
-        <Grid item xs={2} display="flex" padding={1}>
+        <Grid item xs={2} display="flex">
           <Spacing flex={1} />
           <StyledViewList
             color={defaultView === "list" ? "primary" : "disabled"}
@@ -109,7 +109,7 @@ export const PairsContent = () => {
         </Grid>
       </Grid>
 
-      <H6 fontWeight={"bold"} margin={2} marginBottom={1} marginTop={0}>
+      <H6 fontWeight={"bold"} marginBottom={1} marginTop={1.5}>
         My Pairs
       </H6>
 
@@ -119,7 +119,7 @@ export const PairsContent = () => {
         <ViewComfy pairs={pairsSubscribedFiltered} />
       )}
 
-      <H6 fontWeight={"bold"} padding={2} paddingBottom={1}>
+      <H6 fontWeight={"bold"} marginTop={2} paddingBottom={1}>
         Available Pairs
       </H6>
 
