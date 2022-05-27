@@ -35,7 +35,7 @@ const PairLine = ({ pair, ...props }: PairLineProps) => {
       hover
       {...props}
     >
-      <Flex flex={1}>
+      <Flex flex={"160px 1 0"}>
         <PairIcon pair={pair} />
       </Flex>
       <Flex flex={1} alignItems="center">
