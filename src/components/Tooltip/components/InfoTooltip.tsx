@@ -8,7 +8,6 @@ import {
   Zoom,
 } from "@mui/material";
 import { useState } from "react";
-import { Flex } from "src/components/Layout/Flex";
 import StyledTooltip from "./Tooltip";
 
 const StyledInfo = styled(InfoOutlined)`

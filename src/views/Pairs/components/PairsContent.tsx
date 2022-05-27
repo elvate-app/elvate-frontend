@@ -3,7 +3,6 @@ import IconViewList from "@mui/icons-material/ViewList";
 import { Grid, styled } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import Card from "src/components/Card";
 import InputSearch from "src/components/Inputs/InputSearch";
 import { Spacing } from "src/components/Layout/Spacing";
 import { H6 } from "src/components/Typo";
