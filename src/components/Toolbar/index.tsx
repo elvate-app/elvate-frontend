@@ -1,10 +1,12 @@
 import {
+  alpha,
   Box,
   BoxProps,
   styled,
   Toolbar as TB,
   ToolbarProps,
 } from "@mui/material";
+import background from "src/assets/banner.png";
 
 export const Toolbar = styled(
   ({ children, contentProps, ...props }: ToolbarContentProps) => (
@@ -30,7 +32,15 @@ export const ToolbarContent = styled(
     </TB>
   )
 )`
-  background-color: ${(props) => props.theme.palette.background.darker};
+  background-image: linear-gradient(
+      to right,
+      ${({ theme }) => alpha(theme.palette.background.dark, 0.85)},
+      ${({ theme }) => alpha(theme.palette.background.dark, 0.9)},
+      ${({ theme }) => alpha(theme.palette.background.dark, 0.9)}
+    ),
+    url(${background});
+  background-size: cover;
+  background-position: 0% 80%;
   margin-bottom: ${(props) => props.theme.spacing(2)};
   padding: ${(props) => props.theme.spacing(3)};
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
