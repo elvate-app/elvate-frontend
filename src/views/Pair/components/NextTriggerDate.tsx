@@ -12,7 +12,6 @@ const Letter = styled(FlexCenter)`
   margin: ${(props) => props.theme.spacing(0.5)};
   font-weight: bolder;
   border-radius: 5px;
-  height: 1.8em;
   width: 1.8em;
 `;
 
@@ -27,7 +26,7 @@ const Numbers = styled(H6)`
 `;
 
 const StyledSkeleton = styled(Skeleton)`
-  height: 36.8px;
+  height: 32px;
 `;
 
 const Spacing = styled("div")`
