@@ -50,7 +50,7 @@ export const ToolbarContent = styled(
 `;
 
 export const Content = styled((props: BoxProps) => <Box {...props} />)`
-  padding: ${(props) => props.theme.spacing(1)};
+  padding: ${(props) => props.theme.spacing(1.5)};
   max-width: 80rem;
   margin-left: auto;
   margin-right: auto;
