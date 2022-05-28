@@ -1,4 +1,4 @@
-import { ArrowBack } from "@mui/icons-material";
+import { KeyboardArrowLeft } from "@mui/icons-material";
 import { styled } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { FlexCenterColumn } from "src/components/Layout/Flex";
@@ -10,14 +10,10 @@ const Root = styled(FlexCenterColumn)`
   width: 100%;
 `;
 
-const CustomArrowBack = styled(ArrowBack)`
+const CustomArrowBack = styled(KeyboardArrowLeft)`
   font-size: ${(props) => props.theme.typography.h4};
-  margin-right: ${(props) => props.theme.spacing(2)};
-  transition: all 0.3s;
+  margin-right: ${(props) => props.theme.spacing(1)};
   cursor: pointer;
-  &:hover {
-    color: ${(props) => props.theme.palette.secondary.main};
-  }
 `;
 
 const Assets = () => {
