@@ -94,7 +94,7 @@ const CreatePair = () => {
 
   return (
     <Root>
-      <InfoCard>
+      <InfoCard width={{ xs: "18em", md: "auto" }}>
         You can create a pair with custom tokens that doesn't exist.
       </InfoCard>
       <Card padding={1}>
