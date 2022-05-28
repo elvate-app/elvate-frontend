@@ -74,7 +74,7 @@ const DashboardInformation = () => {
       <H6 fontWeight={"bold"} marginTop={2} marginBottom={1}>
         My Informations
       </H6>
-      <Grid container columns={{ xs: 4, lg: 8 }} spacing={{ lg: 4 }}>
+      <Grid container columns={{ xs: 4, lg: 8 }} spacing={{ xs: 2, lg: 4 }}>
         <Grid item xs={2} marginBottom={{ xs: 2, lg: 0 }}>
           <Card
             title="My Eligible Subscriptions"

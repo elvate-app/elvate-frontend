@@ -34,7 +34,7 @@ const DashboardToolbar = () => {
             </FlexColumn>
           </Grid>
           <Grid item xs={2}>
-            <FlexColumn paddingRight={1}>
+            <FlexColumn paddingRight={1} marginTop={{ xs: 2, md: 0 }}>
               <Subtitle1>Total Value Deposited</Subtitle1>
               <H6>{totalDeposited ? `$${totalDeposited}` : <Skeleton />}</H6>
             </FlexColumn>
