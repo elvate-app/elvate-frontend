@@ -61,6 +61,7 @@ export const InfoCard = styled(({ children, ...props }: BoxProps) => (
   border: 1px solid ${({ theme }) => theme.palette.secondary.main};
   font-size: ${({ theme }) => theme.typography.subtitle1};
   margin-bottom: ${({ theme }) => theme.spacing(2)};
+  padding: ${({ theme }) => theme.spacing(1)};
   color: ${({ theme }) => theme.palette.text.secondary};
 `;
 

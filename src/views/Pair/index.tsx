@@ -1,7 +1,9 @@
 import { styled } from "@mui/material";
 import { BigNumber } from "ethers";
 import { useParams } from "react-router-dom";
+import { InfoCard } from "src/components/Card";
 import { FlexCenterColumn } from "src/components/Layout/Flex";
+import { Content } from "src/components/Toolbar";
 import { usePairWithId } from "src/hooks/usePairs";
 import PairSubscription from "./components/PairSubscription";
 import PairToolbar from "./components/PairToolbar";
@@ -21,13 +23,13 @@ const Pair = () => {
     <Root>
       <PairToolbar pair={pair} />
 
-      {/* <InfoCard>
-        Subscribe here. If your deposit allow it, the purchase will be performed
-        when the pair will be triggered. Anyone can trigger a pair and can
-        obtain a small amount of fees.
-      </InfoCard> */}
+      <Content width={{ xs: "331px", md: "700px" }}>
+        <InfoCard margin="auto">
+          Subscribe here to automatically buy each week.
+        </InfoCard>
 
-      <PairSubscription pair={pair} />
+        <PairSubscription pair={pair} />
+      </Content>
     </Root>
   );
 };
