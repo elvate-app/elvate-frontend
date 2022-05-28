@@ -1,5 +1,5 @@
 import { DoubleArrow } from "@mui/icons-material";
-import { Box, styled } from "@mui/material";
+import { Box, keyframes, Palette, styled } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 import { useState } from "react";
 import ButtonEdit from "src/components/Button/ButtonEdit";
@@ -18,10 +18,19 @@ import { isNumber } from "src/utils/number";
 import { getTokenByAddress } from "src/utils/token";
 import PairTokenDescription from "./PairTokenDescription";
 
+function animation(palette: Palette) {
+  return keyframes`
+  0%{color: ${palette.secondary.dark}};
+  50%{color: ${palette.secondary.main}};
+  100%{color: ${palette.secondary.dark}};
+}`;
+}
+
 const StyledDoubleArrow = styled(DoubleArrow)`
+  animation: ${(props) => animation(props.theme.palette)} linear 2s infinite;
   font-size: ${(props) => props.theme.typography.h4};
   margin: ${(props) => props.theme.spacing(2)};
-  color: ${(props) => props.theme.palette.divider};
+
   @media (max-width: 900px) {
     transform: rotate(90deg);
   }
