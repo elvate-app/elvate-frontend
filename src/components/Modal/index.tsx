@@ -6,15 +6,14 @@ import { drawerWidth } from "src/views/AppBar";
 
 export const StyledDialog = styled(Dialog)`
   & .${dialogClasses.paper} {
-    border: 1px solid ${({ theme }) => theme.palette.divider};
     background-color: ${(props) => props.theme.palette.background.dark};
     background-image: none;
     border-radius: 5px;
     overflow: hidden;
-    width: 400px;
+    max-width: 400px;
+    width: 90%;
     margin: 0;
     margin-left: ${drawerWidth}px;
-    border 2px solid blue;
 
     @media (max-width: 900px) {
       margin-left: 0px;
@@ -23,7 +22,8 @@ export const StyledDialog = styled(Dialog)`
 `;
 
 const StyledToolbar = styled(Toolbar)`
-  background-color: ${({ theme }) => theme.palette.divider};
+  background-color: ${({ theme }) => theme.palette.background.background};
+  color: ${(props) => props.theme.palette.primary.contrastText};
   padding-top: ${({ theme }) => theme.spacing(1.5)};
   border-radius-top-right: 15px;
   border-radius-top-left: 15px;
