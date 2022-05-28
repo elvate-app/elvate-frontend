@@ -86,7 +86,7 @@ const AssetsList = () => {
                 sx={{ marginRight: 1 }}
                 onClick={() => {
                   const modal = showModal(DepositModal, {
-                    title: `Deposit BNB`,
+                    title: `Deposit MATIC`,
                     max: ethers.utils.formatEther(balance ?? "0"),
                     decimal: 18,
                     onCancel: () => {
