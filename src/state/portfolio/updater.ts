@@ -1,5 +1,5 @@
 import { useWeb3React } from "@web3-react/core";
-import { ContractCallResults, Multicall } from "ethereum-multicall";
+import { ContractCallResults } from "ethereum-multicall";
 import { CallContext } from "ethereum-multicall/dist/esm/models";
 import { BigNumber } from "ethers";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -10,6 +10,7 @@ import ERC20 from "src/contracts/ERC20.json";
 import { useElvateCoreContract } from "src/hooks/useContract";
 import { useAllTokens } from "src/hooks/useCustomTokens";
 import useDebounce from "src/hooks/useDebounce";
+import useMulticall from "src/hooks/useMulticall";
 import { updateBalance, updateDeposit } from "./actions";
 import { MapTokenValue } from "./reducer";
 
@@ -24,20 +25,12 @@ export default function Updater(): null {
   const contract = useElvateCoreContract(true);
   const dispatch = useDispatch();
   const tokens = useAllTokens();
+  const multicall = useMulticall();
   const [state, setState] = useState<PortfolioState>({
     deposit: undefined,
     balance: undefined,
     timestamp: 0,
   });
-
-  const multicall = useMemo(() => {
-    if (!library || !account) return undefined;
-
-    return new Multicall({
-      ethersProvider: library,
-      tryAggregate: true,
-    });
-  }, [account, library]);
 
   const depositFilter = useMemo(
     () =>
