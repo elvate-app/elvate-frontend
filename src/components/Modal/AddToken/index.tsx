@@ -1,5 +1,9 @@
 import { Box, Button, CircularProgress, DialogProps } from "@mui/material";
 import { styled } from "@mui/system";
+import {
+  CallReturnContext,
+  ContractCallResults,
+} from "ethereum-multicall/dist/esm/models";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { TokenIcon } from "src/components/Icons/TokenIcons";
@@ -7,15 +11,18 @@ import InputPaste from "src/components/Inputs/InputPaste";
 import { FlexCenter } from "src/components/Layout/Flex";
 import { ToolbarContent } from "src/components/Toolbar";
 import { Subtitle1 } from "src/components/Typo";
-import { Token } from "src/constants/tokens";
+import { Token, unknown } from "src/constants/tokens";
+import ERC20Contract from "src/contracts/ERC20.json";
 import { useTokenContract } from "src/hooks/useContract";
 import { useAllTokens, useCustomTokens } from "src/hooks/useCustomTokens";
+import useMulticall from "src/hooks/useMulticall";
 import { updateCustomTokens } from "src/state/tokens/actions";
 import { isAddress } from "src/utils/address";
 import { ModalToolbar, StyledDialog } from "..";
 
 const InputContainer = styled(Box)`
-  padding: ${(props) => props.theme.spacing(2)};
+  padding-left: ${(props) => props.theme.spacing(2)};
+  padding-right: ${(props) => props.theme.spacing(2)};
 `;
 
 export type TokenListModalProps = {
@@ -23,35 +30,83 @@ export type TokenListModalProps = {
 } & DialogProps;
 
 const AddTokenModal = ({ title, onCancel, ...props }: TokenListModalProps) => {
-  const [address, setAddress] = useState<string>("");
   const [isFetching, setIsFetching] = useState<boolean>(false);
-  const [decimals, setDecimals] = useState<number | undefined>(undefined);
-  const [coingeckoInfo, setCoingeckoInfo] = useState<any | undefined>(
-    undefined
-  );
+  const [token, setToken] = useState<Token>(unknown);
   const customTokens = useCustomTokens();
   const dispatch = useDispatch();
-  const isValidAddress = isAddress(address);
-  const tokenContract = useTokenContract(address);
+  const tokenContract = useTokenContract(token ? token.address : undefined);
   const tokens = useAllTokens();
+  const multicall = useMulticall();
+
+  const isValidAddress = token !== undefined && isAddress(token.address);
 
   useEffect(() => {
-    if (!tokenContract || !isValidAddress) {
-      setCoingeckoInfo(undefined);
-      setDecimals(undefined);
+    if (!tokenContract || !isValidAddress || !multicall) {
+      setToken((state: Token) => {
+        return { ...unknown, address: state.address };
+      });
       return;
     }
 
     const fetchDatas = async () => {
       setIsFetching(true);
 
-      setDecimals(await tokenContract.decimals());
+      const calls = [
+        {
+          reference: "decimals",
+          methodName: "decimals",
+          methodParameters: [],
+        },
+        {
+          reference: "name",
+          methodName: "name",
+          methodParameters: [],
+        },
+        {
+          reference: "symbol",
+          methodName: "symbol",
+          methodParameters: [],
+        },
+      ];
+
+      const context = {
+        reference: "tokenInfo",
+        contractAddress: token.address,
+        abi: ERC20Contract.abi,
+        calls: calls,
+      };
+
+      const contractCallResult: ContractCallResults = await multicall.call(
+        context
+      );
+
+      const decimals =
+        contractCallResult.results.tokenInfo.callsReturnContext.find(
+          (ret: CallReturnContext) => ret.reference === "decimals"
+        )?.returnValues[0];
+      const description =
+        contractCallResult.results.tokenInfo.callsReturnContext.find(
+          (ret: CallReturnContext) => ret.reference === "name"
+        )?.returnValues[0];
+      const symbol =
+        contractCallResult.results.tokenInfo.callsReturnContext.find(
+          (ret: CallReturnContext) => ret.reference === "symbol"
+        )?.returnValues[0];
+
+      setToken((state: Token) => {
+        return {
+          ...state,
+          decimals: decimals,
+          description: description,
+          symbol: symbol,
+        };
+      });
+
+      // Try to fetch datas from coingecko too
       const headers = { "Content-Type": "application/json" };
       const res = await fetch(
         `https://api.coingecko.com/api/v3/coins/polygon-pos/contract/${encodeURIComponent(
-          // address.toLowerCase()
-          // "0xc2132D05D31c914a87C6611C10748AEb04B58e8F".toLowerCase() // USDT
-          "0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683".toLowerCase() // SAND
+          token.address.toLowerCase()
         )}`,
         {
           method: "GET",
@@ -61,40 +116,33 @@ const AddTokenModal = ({ title, onCancel, ...props }: TokenListModalProps) => {
 
       if (res.ok) {
         const json = await res.json();
-        setCoingeckoInfo(json);
+        setToken((state: Token) => {
+          return {
+            ...state,
+            coingeckoId: json.id,
+            description: json.localization.en,
+            icon: json.image.thumb,
+          };
+        });
       }
 
       setIsFetching(false);
     };
 
     fetchDatas();
-  }, [tokenContract, isValidAddress]);
+  }, [tokenContract, isValidAddress, multicall, setToken, token.address]);
 
   const isAddressExist =
-    tokens.find((token: Token) => token.address === address) !== undefined;
+    tokens.find((t: Token) => t.address === token.address) !== undefined;
 
-  const handleAddToken = async (address: string) => {
-    if (!tokenContract || !isValidAddress || !coingeckoInfo || !decimals)
-      return;
-
-    const newToken: Token = {
-      address: address,
-      symbol: coingeckoInfo.symbol.toUpperCase(),
-      decimals: decimals,
-      description: coingeckoInfo.localization.en,
-      coingeckoId: coingeckoInfo.id,
-      icon: coingeckoInfo.image.thumb,
-    };
+  const handleAddToken = async () => {
+    if (!tokenContract || !isValidAddress) return;
 
     onCancel();
     dispatch(
-      updateCustomTokens(
-        !customTokens ? [newToken] : [...customTokens, newToken]
-      )
+      updateCustomTokens(!customTokens ? [token] : [...customTokens, token])
     );
   };
-
-  // dispatch(updateCustomTokens([]));
 
   return (
     <StyledDialog {...props}>
@@ -102,36 +150,42 @@ const AddTokenModal = ({ title, onCancel, ...props }: TokenListModalProps) => {
       <ToolbarContent contentProps={{ display: "flex" }} sx={{ padding: 0 }}>
         <Subtitle1>Add custom token</Subtitle1>
       </ToolbarContent>
-      <Box sx={{ height: "12em" }}>
+      <Box sx={{ height: "9em" }}>
         <InputContainer>
           <InputPaste
-            error={(!isValidAddress && address.length > 0) || isAddressExist}
+            error={
+              (!isValidAddress && token.address.length > 0) || isAddressExist
+            }
             label="Token Address"
             helperText={
-              !isValidAddress && address.length > 0
+              !isValidAddress && token.address.length > 0
                 ? "Invalid address"
                 : isAddressExist
                 ? "Token already added"
                 : ""
             }
             variant="filled"
-            value={address}
-            onChange={(event) => setAddress(event.target.value)}
-            onPasteClick={setAddress}
+            value={token.address}
+            onChange={(event) =>
+              setToken({ ...token, address: event.target.value })
+            }
+            onPasteClick={(address) => setToken({ ...token, address: address })}
             fullWidth
           />
         </InputContainer>
-        {coingeckoInfo !== undefined ? (
+        {isFetching ? (
           <FlexCenter>
-            <TokenIcon
-              src={coingeckoInfo.image.thumb}
-              sx={{ marginRight: 1 }}
-            />
-            {coingeckoInfo.symbol.toUpperCase()}
+            <CircularProgress size="1.5em" sx={{ marginTop: 2 }} />
           </FlexCenter>
-        ) : isFetching ? (
+        ) : token.coingeckoId.length !== 0 ? (
           <FlexCenter>
-            <CircularProgress size="1em" />
+            <TokenIcon src={token.icon} sx={{ marginRight: 1 }} />
+            {token.symbol.toUpperCase()}
+          </FlexCenter>
+        ) : isValidAddress ? (
+          <FlexCenter>
+            <TokenIcon src={unknown.icon} sx={{ marginRight: 1 }} />
+            {token.symbol.toUpperCase()}
           </FlexCenter>
         ) : (
           <></>
@@ -141,12 +195,12 @@ const AddTokenModal = ({ title, onCancel, ...props }: TokenListModalProps) => {
         <Button
           variant="contained"
           fullWidth
-          onClick={() => handleAddToken(address)}
+          onClick={() => handleAddToken()}
           disabled={
             !isValidAddress ||
             isAddressExist ||
-            coingeckoInfo === undefined ||
-            decimals === undefined
+            token.decimals === 0 ||
+            isFetching
           }
         >
           Add Token
