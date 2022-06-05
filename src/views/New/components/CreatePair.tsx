@@ -6,7 +6,7 @@ import LoadingButton from "src/components/Button/LoadingButton";
 import Card, { InfoCard } from "src/components/Card";
 import { FlexCenter, FlexColumn } from "src/components/Layout/Flex";
 import { Token } from "src/constants/tokens";
-import { useElvateCoreContract } from "src/hooks/useContract";
+import { useElvatePairContract } from "src/hooks/useContract";
 import { useDefaultToken } from "src/hooks/useToken";
 import { getContrackCallWithSnackbar } from "src/utils/getContractCall";
 import SelectTokenButton from "./SelectTokenButton";
@@ -76,7 +76,7 @@ const CreatePair = () => {
   const defaultToken2 = useDefaultToken(1);
   const [tokenIn, setTokenIn] = useState<Token>(defaultToken1);
   const [tokenOut, setTokenOut] = useState<Token>(defaultToken2);
-  const contract = useElvateCoreContract(true);
+  const pairContract = useElvatePairContract(true);
   const { enqueueSnackbar } = useSnackbar();
 
   const handleSwap = () => {
@@ -85,11 +85,16 @@ const CreatePair = () => {
   };
 
   const handleClick = async () => {
-    await getContrackCallWithSnackbar(contract, "createPair", enqueueSnackbar, [
-      tokenIn.address,
-      tokenOut.address,
-      // { value: ethers.utils.parseEther("0.1") },
-    ]);
+    await getContrackCallWithSnackbar(
+      pairContract,
+      "createPair",
+      enqueueSnackbar,
+      [
+        tokenIn.address,
+        tokenOut.address,
+        // { value: ethers.utils.parseEther("0.1") },
+      ]
+    );
   };
 
   return (

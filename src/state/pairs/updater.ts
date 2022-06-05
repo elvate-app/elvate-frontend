@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import useActiveWeb3React from "src/hooks/useActiveWeb3React";
-import { useElvateCoreContract } from "src/hooks/useContract";
+import { useElvatePairContract } from "src/hooks/useContract";
 import useDebounce from "src/hooks/useDebounce";
 import ElvatePair from "src/types/ElvatePair";
 import { getContractCall } from "src/utils/getContractCall";
@@ -15,7 +15,7 @@ type PairsState = {
 export default function Updater(): null {
   const { library, chainId } = useActiveWeb3React();
   const dispatch = useDispatch();
-  const contract = useElvateCoreContract(false);
+  const pairContract = useElvatePairContract(false);
 
   const [state, setState] = useState<PairsState>({
     pairs: null,
@@ -77,13 +77,16 @@ export default function Updater(): null {
   );
 
   const fetchAllPairs = useCallback(async () => {
-    if (!contract || !library) return;
+    if (!pairContract || !library) return;
 
-    const pairs: ElvatePair[] = await getContractCall(contract, "getAllPairs");
+    const pairs: ElvatePair[] = await getContractCall(
+      pairContract,
+      "getAllPairs"
+    );
     setState((state: PairsState) => {
       return { ...state, pairs: pairs };
     });
-  }, [contract, library, setState]);
+  }, [pairContract, library, setState]);
 
   const init = useCallback(() => {
     fetchAllPairs();
@@ -93,21 +96,21 @@ export default function Updater(): null {
   useEffect(() => {
     setState({ pairs: null });
 
-    if (!library || !chainId || !contract) return undefined;
+    if (!library || !chainId || !pairContract) return undefined;
 
     init();
 
-    contract.on("PairCreated", onElvatePairCreated);
-    contract.on("PairTriggered", onElvatePairTriggered);
+    pairContract.on("PairCreated", onElvatePairCreated);
+    pairContract.on("PairTriggered", onElvatePairTriggered);
 
     return () => {
-      contract.removeListener("PairCreated");
-      contract.removeListener("PairTriggered");
+      pairContract.removeListener("PairCreated");
+      pairContract.removeListener("PairTriggered");
     };
   }, [
     library,
     chainId,
-    contract,
+    pairContract,
     init,
     onElvatePairCreated,
     onElvatePairTriggered,

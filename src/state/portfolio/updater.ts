@@ -5,7 +5,7 @@ import { BigNumber } from "ethers";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Token } from "src/constants/tokens";
-import ElvateContract from "src/contracts/ElvateCore.json";
+import ElvateContract from "src/artifacts/contracts/ElvateCore.sol/ElvateCore.json";
 import ERC20 from "src/contracts/ERC20.json";
 import { useElvateCoreContract } from "src/hooks/useContract";
 import { useAllTokens } from "src/hooks/useCustomTokens";
@@ -22,7 +22,7 @@ type PortfolioState = {
 
 export default function Updater(): null {
   const { account, library } = useWeb3React();
-  const contract = useElvateCoreContract(true);
+  const coreContract = useElvateCoreContract(true);
   const dispatch = useDispatch();
   const tokens = useAllTokens();
   const multicall = useMulticall();
@@ -35,22 +35,22 @@ export default function Updater(): null {
   const depositFilter = useMemo(
     () =>
       library
-        ? contract?.filters.TokenDeposited(account, null) ?? undefined
+        ? coreContract?.filters.TokenDeposited(account, null) ?? undefined
         : undefined,
-    [account, contract, library]
+    [account, coreContract, library]
   );
 
   const withdrewFilter = useMemo(
     () =>
       library
-        ? contract.filters.TokenWithdrew(account, null) ?? undefined
+        ? coreContract.filters.TokenWithdrawal(account, null) ?? undefined
         : undefined,
-    [account, contract, library]
+    [account, coreContract, library]
   );
 
   const pairTriggeredFilter = useMemo(
-    () => contract?.filters.PairTriggered() ?? undefined,
-    [contract]
+    () => coreContract?.filters.PairTriggered() ?? undefined,
+    [coreContract]
   );
 
   const updateLastEventTimestamp = useCallback(
@@ -67,7 +67,7 @@ export default function Updater(): null {
   const debouncedState = useDebounce(state, 800);
 
   const updateDepositCallback = useCallback(async () => {
-    if (!contract || !account || !multicall) return;
+    if (!coreContract || !account || !multicall) return;
 
     const calls = tokens.reduce(
       (a: CallContext[], token: Token) => [
@@ -83,7 +83,7 @@ export default function Updater(): null {
 
     const context = {
       reference: "deposit",
-      contractAddress: contract.address,
+      contractAddress: coreContract.address,
       abi: ElvateContract.abi,
       calls: calls,
     };
@@ -91,6 +91,8 @@ export default function Updater(): null {
     const contractCallResult: ContractCallResults = await multicall.call(
       context
     );
+
+    console.log(contractCallResult);
 
     let map: MapTokenValue = {};
     tokens.map((token: Token) => {
@@ -106,10 +108,10 @@ export default function Updater(): null {
     setState((state) => {
       return { ...state, deposit: map };
     });
-  }, [account, contract, multicall, setState, tokens]);
+  }, [account, coreContract, multicall, setState, tokens]);
 
   const updateBalanceCallback = useCallback(async () => {
-    if (!contract || !account || !multicall) return;
+    if (!coreContract || !account || !multicall) return;
 
     const context = tokens.reduce(
       (a: any, v: Token) => [
@@ -145,7 +147,7 @@ export default function Updater(): null {
     setState((state) => {
       return { ...state, balance: map };
     });
-  }, [account, contract, multicall, tokens]);
+  }, [account, coreContract, multicall, tokens]);
 
   useEffect(() => {
     setState({
@@ -168,17 +170,17 @@ export default function Updater(): null {
   useEffect(() => {
     if (!depositFilter || !withdrewFilter || !pairTriggeredFilter) return;
 
-    contract.on(depositFilter, updateLastEventTimestamp);
-    contract.on(withdrewFilter, updateLastEventTimestamp);
-    contract.on(pairTriggeredFilter, updateLastEventTimestamp);
+    coreContract.on(depositFilter, updateLastEventTimestamp);
+    coreContract.on(withdrewFilter, updateLastEventTimestamp);
+    coreContract.on(pairTriggeredFilter, updateLastEventTimestamp);
 
     return () => {
-      contract.removeListener(depositFilter);
-      contract.removeListener(withdrewFilter);
-      contract.removeListener(pairTriggeredFilter);
+      coreContract.removeListener(depositFilter);
+      coreContract.removeListener(withdrewFilter);
+      coreContract.removeListener(pairTriggeredFilter);
     };
   }, [
-    contract,
+    coreContract,
     depositFilter,
     withdrewFilter,
     pairTriggeredFilter,

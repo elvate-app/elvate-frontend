@@ -17,6 +17,7 @@ const DepositTokenModal = ({ address, ...props }: DepositTokenModalProps) => {
   const { allowance } = useTokenAllowance(address);
 
   const handleDeposit = async (amount: string, decimal: number) => {
+    console.log(elvateContract);
     await getContrackCallWithSnackbar(
       elvateContract,
       "depositToken",

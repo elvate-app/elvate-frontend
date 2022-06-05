@@ -3,8 +3,14 @@ import { Contract } from "@ethersproject/contracts";
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
 import { ethers } from "ethers";
 import { useMemo } from "react";
-import { NETWORK_MATIC_MUMBAI_TESTNET } from "src/constants/chain";
-import ElvateCore from "src/contracts/ElvateCore.json";
+import ElvateCore from "src/artifacts/contracts/ElvateCore.sol/ElvateCore.json";
+import ElvatePair from "src/artifacts/contracts/ElvatePair.sol/ElvatePair.json";
+import ElvateSubscription from "src/artifacts/contracts/ElvateSubscription.sol/ElvateSubscription.json";
+import {
+  ELVATE_CORE_ADDRESS,
+  ELVATE_PAIR_ADDRESS,
+  ELVATE_SUBSCRIPTION_ADDRESS,
+} from "src/constants/addresses";
 import ERC20 from "src/contracts/ERC20.json";
 import { isAddress } from "src/utils/address";
 import { simpleRpcProvider } from "src/utils/providers";
@@ -83,15 +89,25 @@ export function useTokenContract(
 }
 
 export function useElvateCoreContract(withSignerIfPossible?: boolean) {
-  const { chainId } = useActiveWeb3React();
-  const n = chainId === NETWORK_MATIC_MUMBAI_TESTNET ? chainId : undefined;
-  const address = n ? ElvateCore.networks[n].address : undefined;
-
-  const contract = useContract<any>(
-    address,
+  return useContract<any>(
+    ELVATE_CORE_ADDRESS,
     ElvateCore.abi,
     withSignerIfPossible
   );
+}
 
-  return contract;
+export function useElvateSubscriptionContract(withSignerIfPossible?: boolean) {
+  return useContract<any>(
+    ELVATE_SUBSCRIPTION_ADDRESS,
+    ElvateSubscription.abi,
+    withSignerIfPossible
+  );
+}
+
+export function useElvatePairContract(withSignerIfPossible?: boolean) {
+  return useContract<any>(
+    ELVATE_PAIR_ADDRESS,
+    ElvatePair.abi,
+    withSignerIfPossible
+  );
 }

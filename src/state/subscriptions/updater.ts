@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import useActiveWeb3React from "src/hooks/useActiveWeb3React";
-import { useElvateCoreContract } from "src/hooks/useContract";
+import { useElvateSubscriptionContract } from "src/hooks/useContract";
 import ElvateSubscription from "src/types/ElvateSubscription";
 import { getContractCall } from "src/utils/getContractCall";
 import { updateElvateSubscriptions } from "./actions";
@@ -13,7 +13,7 @@ type SubscriptionState = {
 export default function Updater(): null {
   const { library, chainId } = useActiveWeb3React();
   const dispatch = useDispatch();
-  const contract = useElvateCoreContract(false);
+  const subscriptionContract = useElvateSubscriptionContract(false);
 
   const [state, setState] = useState<SubscriptionState>({
     subscriptions: null,
@@ -59,13 +59,14 @@ export default function Updater(): null {
         if (elvateSubscription.amountIn.eq(state.subscriptions[index].amountIn))
           return state;
 
-        const filteredSubscriptions: ElvateSubscription[] = state.subscriptions.filter(
-          (sub: ElvateSubscription) =>
-            !(
-              sub.owner === elvateSubscription.owner &&
-              sub.pairId.eq(elvateSubscription.pairId)
-            )
-        );
+        const filteredSubscriptions: ElvateSubscription[] =
+          state.subscriptions.filter(
+            (sub: ElvateSubscription) =>
+              !(
+                sub.owner === elvateSubscription.owner &&
+                sub.pairId.eq(elvateSubscription.pairId)
+              )
+          );
 
         return {
           subscriptions: [...filteredSubscriptions, elvateSubscription],
@@ -77,31 +78,31 @@ export default function Updater(): null {
 
   const init = useCallback(async () => {
     const res: ElvateSubscription[] = await getContractCall(
-      contract,
+      subscriptionContract,
       "getAllSubscriptions"
     );
     setState({ subscriptions: res });
-  }, [contract]);
+  }, [subscriptionContract]);
 
   // attach/detach listeners
   useEffect(() => {
     setState({ subscriptions: null });
 
-    if (!library || !chainId || !contract) return undefined;
+    if (!library || !chainId || !subscriptionContract) return undefined;
 
     init();
 
-    contract.on("SubscriptionCreated", onElvateSubscriptionCreated);
-    contract.on("SubscriptionEdited", onElvateSubscriptionEdited);
+    subscriptionContract.on("SubscriptionCreated", onElvateSubscriptionCreated);
+    subscriptionContract.on("SubscriptionEdited", onElvateSubscriptionEdited);
 
     return () => {
-      contract.removeListener("SubscriptionCreated");
-      contract.removeListener("SubscriptionEdited");
+      subscriptionContract.removeListener("SubscriptionCreated");
+      subscriptionContract.removeListener("SubscriptionEdited");
     };
   }, [
     library,
     chainId,
-    contract,
+    subscriptionContract,
     init,
     onElvateSubscriptionCreated,
     onElvateSubscriptionEdited,
