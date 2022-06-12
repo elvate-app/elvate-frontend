@@ -1,5 +1,6 @@
 import { SwapHoriz, SwapVert } from "@mui/icons-material";
 import { styled } from "@mui/material";
+import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
@@ -7,7 +8,7 @@ import LoadingButton from "src/components/Button/LoadingButton";
 import Card, { InfoCard } from "src/components/Card";
 import { FlexCenter, FlexColumn } from "src/components/Layout/Flex";
 import { Token } from "src/constants/tokens";
-import { usePairCreationFees } from "src/hooks/useApplication";
+import { useOwner, usePairCreationFees } from "src/hooks/useApplication";
 import { useElvateCoreContract } from "src/hooks/useContract";
 import { useDefaultToken } from "src/hooks/useToken";
 import { getContrackCallWithSnackbar } from "src/utils/getContractCall";
@@ -81,6 +82,8 @@ const CreatePair = () => {
   const contract = useElvateCoreContract(true);
   const { enqueueSnackbar } = useSnackbar();
   const fees = usePairCreationFees();
+  const owner = useOwner();
+  const { account } = useWeb3React();
 
   const handleSwap = () => {
     setTokenIn(tokenOut);
@@ -91,7 +94,7 @@ const CreatePair = () => {
     await getContrackCallWithSnackbar(contract, "createPair", enqueueSnackbar, [
       tokenIn.address,
       tokenOut.address,
-      { value: ethers.utils.parseEther(fees || "0") },
+      { value: ethers.utils.parseEther(account === owner ? "0" : fees || "0") },
     ]);
   };
 

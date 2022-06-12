@@ -16,6 +16,7 @@ import { useAllDeposit } from "src/hooks/usePortfolio";
 import { useAllPrices } from "src/hooks/usePrices";
 import useTokenList from "src/hooks/useToken";
 import {
+  updateOwner,
   updatePairCreationFees,
   updateSwapFees,
   updateTotalValueDeposited,
@@ -25,6 +26,7 @@ type ApplicationState = {
   swapFees: string | undefined;
   pairCreationFees: string | undefined;
   totalValueDeposited: string | undefined;
+  owner: string | undefined;
 };
 
 export default function Updater(): null {
@@ -36,6 +38,7 @@ export default function Updater(): null {
     swapFees: undefined,
     pairCreationFees: undefined,
     totalValueDeposited: undefined,
+    owner: undefined,
   });
   const dispatch = useDispatch();
   const allPairs = usePairs();
@@ -91,11 +94,13 @@ export default function Updater(): null {
   const updateFeesCallback = useCallback(async () => {
     const swapFees = await contract.swapFees();
     const pairCreationFees = await contract.pairCreationFees();
+    const owner = await contract.owner();
     setState((state: ApplicationState) => {
       return {
         ...state,
         swapFees: ethers.utils.formatEther(swapFees),
         pairCreationFees: ethers.utils.formatEther(pairCreationFees),
+        owner: owner,
       };
     });
   }, [contract, setState]);
@@ -116,6 +121,10 @@ export default function Updater(): null {
   useEffect(() => {
     dispatch(updateSwapFees(state.swapFees));
   }, [dispatch, state.swapFees]);
+
+  useEffect(() => {
+    dispatch(updateOwner(state.owner));
+  }, [dispatch, state.owner]);
 
   return null;
 }

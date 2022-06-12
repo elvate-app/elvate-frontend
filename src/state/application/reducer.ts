@@ -1,5 +1,6 @@
 import { createReducer } from "@reduxjs/toolkit";
 import {
+  updateOwner,
   updatePairCreationFees,
   updateSwapFees,
   updateTotalValueDeposited,
@@ -9,12 +10,14 @@ export interface ApplicationState {
   readonly totalValueDeposited: string | undefined;
   readonly swapFees: string | undefined;
   readonly pairCreationFees: string | undefined;
+  readonly owner: string | undefined;
 }
 
 const initialState: ApplicationState = {
   totalValueDeposited: undefined,
   swapFees: undefined,
   pairCreationFees: undefined,
+  owner: undefined,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -27,5 +30,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateSwapFees, (state, action) => {
       state.swapFees = action.payload;
+    })
+    .addCase(updateOwner, (state, action) => {
+      state.owner = action.payload;
     })
 );

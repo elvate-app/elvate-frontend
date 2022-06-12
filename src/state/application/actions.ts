@@ -10,3 +10,7 @@ export const updateSwapFees = createAction<string | undefined>(
 export const updatePairCreationFees = createAction<string | undefined>(
   "application/updatePairCreationFees"
 );
+
+export const updateOwner = createAction<string | undefined>(
+  "application/updateOwner"
+);

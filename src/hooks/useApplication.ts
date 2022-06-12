@@ -13,3 +13,7 @@ export function useSwapFees(): string | undefined {
 export function usePairCreationFees(): string | undefined {
   return useSelector((state: AppState) => state.application.pairCreationFees);
 }
+
+export function useOwner(): string | undefined {
+  return useSelector((state: AppState) => state.application.owner);
+}
