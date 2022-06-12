@@ -95,14 +95,22 @@ export const pmt: Array<Token> = [
     decimals: 18,
     icon: "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389",
   },
-  // {
-  //   symbol: "SAND",
-  //   description: "The Sandbox",
-  //   coingeckoId: "the-sandbox",
-  //   address: "0xE03489D4E90b22c59c5e23d45DFd59Fc0dB8a025",
-  //   decimals: 18,
-  //   icon: "https://assets.coingecko.com/coins/images/12129/small/sandbox_logo.jpg?1597397942",
-  // },
+  {
+    symbol: "WETH",
+    description: "Wrapped Ethereum",
+    coingeckoId: "ethereum",
+    address: "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
+    decimals: 18,
+    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",
+  },
+  {
+    symbol: "SAND",
+    description: "The Sandbox",
+    coingeckoId: "the-sandbox",
+    address: "0xE03489D4E90b22c59c5e23d45DFd59Fc0dB8a025",
+    decimals: 18,
+    icon: "https://assets.coingecko.com/coins/images/12129/small/sandbox_logo.jpg?1597397942",
+  },
 ];
 
 export default pmt;
