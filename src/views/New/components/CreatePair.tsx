@@ -1,11 +1,13 @@
 import { SwapHoriz, SwapVert } from "@mui/icons-material";
 import { styled } from "@mui/material";
+import { ethers } from "ethers";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import LoadingButton from "src/components/Button/LoadingButton";
 import Card, { InfoCard } from "src/components/Card";
 import { FlexCenter, FlexColumn } from "src/components/Layout/Flex";
 import { Token } from "src/constants/tokens";
+import { usePairCreationFees } from "src/hooks/useApplication";
 import { useElvateCoreContract } from "src/hooks/useContract";
 import { useDefaultToken } from "src/hooks/useToken";
 import { getContrackCallWithSnackbar } from "src/utils/getContractCall";
@@ -78,6 +80,7 @@ const CreatePair = () => {
   const [tokenOut, setTokenOut] = useState<Token>(defaultToken2);
   const contract = useElvateCoreContract(true);
   const { enqueueSnackbar } = useSnackbar();
+  const fees = usePairCreationFees();
 
   const handleSwap = () => {
     setTokenIn(tokenOut);
@@ -88,7 +91,7 @@ const CreatePair = () => {
     await getContrackCallWithSnackbar(contract, "createPair", enqueueSnackbar, [
       tokenIn.address,
       tokenOut.address,
-      // { value: ethers.utils.parseEther("0.1") },
+      { value: ethers.utils.parseEther(fees || "0") },
     ]);
   };
 

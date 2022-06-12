@@ -15,7 +15,11 @@ import usePairs from "src/hooks/usePairs";
 import { useAllDeposit } from "src/hooks/usePortfolio";
 import { useAllPrices } from "src/hooks/usePrices";
 import useTokenList from "src/hooks/useToken";
-import { updateTotalValueDeposited } from "./actions";
+import {
+  updatePairCreationFees,
+  updateSwapFees,
+  updateTotalValueDeposited,
+} from "./actions";
 
 type ApplicationState = {
   swapFees: string | undefined;
@@ -84,13 +88,34 @@ export default function Updater(): null {
     }));
   }, [allPairs, contract, chainId, prices, setState]);
 
+  const updateFeesCallback = useCallback(async () => {
+    const swapFees = await contract.swapFees();
+    const pairCreationFees = await contract.pairCreationFees();
+    setState((state: ApplicationState) => {
+      return {
+        ...state,
+        swapFees: ethers.utils.formatEther(swapFees),
+        pairCreationFees: ethers.utils.formatEther(pairCreationFees),
+      };
+    });
+  }, [contract, setState]);
+
   useEffect(() => {
     updateTotalValueDepositedCallback();
-  }, [deposit, updateTotalValueDepositedCallback]);
+    updateFeesCallback();
+  }, [deposit, updateTotalValueDepositedCallback, updateFeesCallback]);
 
   useEffect(() => {
     dispatch(updateTotalValueDeposited(state.totalValueDeposited));
   }, [dispatch, state.totalValueDeposited]);
+
+  useEffect(() => {
+    dispatch(updatePairCreationFees(state.pairCreationFees));
+  }, [dispatch, state.pairCreationFees]);
+
+  useEffect(() => {
+    dispatch(updateSwapFees(state.swapFees));
+  }, [dispatch, state.swapFees]);
 
   return null;
 }
