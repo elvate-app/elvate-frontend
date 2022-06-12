@@ -22,7 +22,7 @@ const ButtonTrigger = ({ pair }: ButtonSubscribeProps) => {
       onClick={async () => {
         await getContrackCallWithSnackbar(
           contract,
-          "triggerSubscriptions",
+          "triggerPair",
           enqueueSnackbar,
           [pair.tokenIn, pair.tokenOut]
         );

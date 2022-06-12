@@ -1,9 +1,18 @@
+import {
+  CallContext,
+  CallReturnContext,
+  ContractCallResults,
+} from "ethereum-multicall/dist/esm/models";
+import { BigNumber } from "ethers";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import ElvateContract from "src/artifacts/contracts/ElvateCore.sol/ElvateCore.json";
 import useActiveWeb3React from "src/hooks/useActiveWeb3React";
 import { useElvateCoreContract } from "src/hooks/useContract";
+import useMulticall from "src/hooks/useMulticall";
+import usePairs from "src/hooks/usePairs";
+import ElvatePair from "src/types/ElvatePair";
 import ElvateSubscription from "src/types/ElvateSubscription";
-import { getContractCall } from "src/utils/getContractCall";
 import { updateElvateSubscriptions } from "./actions";
 
 type SubscriptionState = {
@@ -14,97 +23,125 @@ export default function Updater(): null {
   const { library, chainId } = useActiveWeb3React();
   const dispatch = useDispatch();
   const contract = useElvateCoreContract(false);
+  const pairs = usePairs();
+  const multicall = useMulticall();
 
   const [state, setState] = useState<SubscriptionState>({
     subscriptions: null,
   });
 
-  const onElvateSubscriptionCreated = useCallback(
-    (elvateSubscription: ElvateSubscription) => {
-      setState((state: any) => {
-        if (!state.subscriptions) return state;
-        if (
-          state.subscriptions.filter(
-            (sub: ElvateSubscription) =>
-              sub.owner === elvateSubscription.owner &&
-              sub.pairId.eq(elvateSubscription.pairId)
-          ).length > 0
-        )
-          return state;
+  const onElvateSubEdited = useCallback(
+    (pairId: BigNumber, owner: string, amountIn: BigNumber) => {
+      setState((current: SubscriptionState) => {
+        const sub = current.subscriptions?.find(
+          (sub: ElvateSubscription) =>
+            sub.pairId.eq(pairId) && sub.owner === owner
+        );
 
-        const newSubscriptions: ElvateSubscription[] = [
-          ...state.subscriptions,
-          elvateSubscription,
-        ];
+        if (current.subscriptions !== null && sub !== undefined) {
+          if (amountIn.eq(sub.amountIn)) return current;
+          // subscription already exist
+          return {
+            subscriptions: [
+              ...current.subscriptions.filter(
+                (sub: ElvateSubscription) =>
+                  sub.pairId !== pairId && sub.owner !== owner
+              ),
+              {
+                pairId: pairId,
+                amountIn: amountIn,
+                owner: owner,
+              },
+            ],
+          };
+        }
 
         return {
-          subscriptions: newSubscriptions,
+          subscriptions: [
+            ...(current.subscriptions || []),
+            {
+              pairId: pairId,
+              amountIn: amountIn,
+              owner: owner,
+            },
+          ],
         };
       });
     },
     [setState]
   );
 
-  const onElvateSubscriptionEdited = useCallback(
-    (elvateSubscription: ElvateSubscription) => {
-      setState((state: any) => {
-        if (!state.subscriptions) return state;
-        const index = state.subscriptions.findIndex(
-          (sub: ElvateSubscription) =>
-            sub.owner === elvateSubscription.owner &&
-            sub.pairId.eq(elvateSubscription.pairId)
-        );
+  const fetchAllSubscriptions = useCallback(async () => {
+    if (!contract || !multicall || !pairs) return;
 
-        if (index < 0) return state;
-        if (elvateSubscription.amountIn.eq(state.subscriptions[index].amountIn))
-          return state;
-
-        const filteredSubscriptions: ElvateSubscription[] = state.subscriptions.filter(
-          (sub: ElvateSubscription) =>
-            !(
-              sub.owner === elvateSubscription.owner &&
-              sub.pairId.eq(elvateSubscription.pairId)
-            )
-        );
-
-        return {
-          subscriptions: [...filteredSubscriptions, elvateSubscription],
-        };
-      });
-    },
-    [setState]
-  );
-
-  const init = useCallback(async () => {
-    const res: ElvateSubscription[] = await getContractCall(
-      contract,
-      "getAllSubscriptions"
+    const calls = pairs.reduce(
+      (a: CallContext[], pair: ElvatePair) => [
+        ...a,
+        {
+          reference: pair.id.toString(),
+          methodName: "getPairSubs",
+          methodParameters: [pair.tokenIn, pair.tokenOut],
+        },
+      ],
+      []
     );
-    setState({ subscriptions: res });
-  }, [contract]);
+
+    const context = {
+      reference: "subs",
+      contractAddress: contract.address,
+      abi: ElvateContract.abi,
+      calls: calls,
+    };
+
+    const contractCallResult: ContractCallResults = await multicall.call(
+      context
+    );
+
+    const allSubs = contractCallResult.results.subs.callsReturnContext.reduce(
+      (subs: Array<ElvateSubscription>, ret: CallReturnContext) => {
+        return [
+          ...subs,
+          ...ret.returnValues.reduce(
+            (subs: Array<ElvateSubscription>, sub: any) => {
+              return [
+                ...subs,
+                {
+                  pairId: BigNumber.from(ret.reference),
+                  amountIn: BigNumber.from(sub[0]),
+                  owner: sub[1],
+                },
+              ];
+            },
+            []
+          ),
+        ];
+      },
+      []
+    );
+
+    setState({ subscriptions: allSubs });
+  }, [contract, multicall, pairs]);
 
   // attach/detach listeners
   useEffect(() => {
     setState({ subscriptions: null });
 
-    if (!library || !chainId || !contract) return undefined;
+    if (!library || !chainId || !contract || !pairs) return undefined;
 
-    init();
+    fetchAllSubscriptions();
 
-    contract.on("SubscriptionCreated", onElvateSubscriptionCreated);
-    contract.on("SubscriptionEdited", onElvateSubscriptionEdited);
+    contract.on("SubEdited", onElvateSubEdited);
 
     return () => {
-      contract.removeListener("SubscriptionCreated");
-      contract.removeListener("SubscriptionEdited");
+      contract.removeListener("SubEdited");
     };
   }, [
     library,
     chainId,
     contract,
-    init,
-    onElvateSubscriptionCreated,
-    onElvateSubscriptionEdited,
+    fetchAllSubscriptions,
+    onElvateSubEdited,
+    pairs,
   ]);
 
   useEffect(() => {

@@ -4,9 +4,9 @@ import { CallContext } from "ethereum-multicall/dist/esm/models";
 import { BigNumber } from "ethers";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
+import ERC20 from "src/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json";
+import ElvateContract from "src/artifacts/contracts/ElvateCore.sol/ElvateCore.json";
 import { Token } from "src/constants/tokens";
-import ElvateContract from "src/contracts/ElvateCore.json";
-import ERC20 from "src/contracts/ERC20.json";
 import { useElvateCoreContract } from "src/hooks/useContract";
 import { useAllTokens } from "src/hooks/useCustomTokens";
 import useDebounce from "src/hooks/useDebounce";
@@ -43,7 +43,7 @@ export default function Updater(): null {
   const withdrewFilter = useMemo(
     () =>
       library
-        ? contract.filters.TokenWithdrew(account, null) ?? undefined
+        ? contract.filters.TokenWithdrawal(account, null) ?? undefined
         : undefined,
     [account, contract, library]
   );
@@ -74,7 +74,7 @@ export default function Updater(): null {
         ...a,
         {
           reference: token.address,
-          methodName: "getDepositedToken",
+          methodName: "depositByOwnerByToken",
           methodParameters: [account, token.address],
         },
       ],

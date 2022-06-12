@@ -6,13 +6,13 @@ import {
 } from "ethereum-multicall/dist/esm/models";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import ERC20 from "src/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json";
 import { TokenIcon } from "src/components/Icons/TokenIcons";
 import InputPaste from "src/components/Inputs/InputPaste";
 import { FlexCenter } from "src/components/Layout/Flex";
 import { ToolbarContent } from "src/components/Toolbar";
 import { Subtitle1 } from "src/components/Typo";
 import { Token, unknown } from "src/constants/tokens";
-import ERC20Contract from "src/contracts/ERC20.json";
 import { useTokenContract } from "src/hooks/useContract";
 import { useAllTokens, useCustomTokens } from "src/hooks/useCustomTokens";
 import useMulticall from "src/hooks/useMulticall";
@@ -72,7 +72,7 @@ const AddTokenModal = ({ title, onCancel, ...props }: TokenListModalProps) => {
       const context = {
         reference: "tokenInfo",
         contractAddress: token.address,
-        abi: ERC20Contract.abi,
+        abi: ERC20.abi,
         calls: calls,
       };
 

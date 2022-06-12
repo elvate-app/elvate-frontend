@@ -3,9 +3,9 @@ import { Contract } from "@ethersproject/contracts";
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
 import { ethers } from "ethers";
 import { useMemo } from "react";
-import { NETWORK_MATIC_MUMBAI_TESTNET } from "src/constants/chain";
-import ElvateCore from "src/contracts/ElvateCore.json";
-import ERC20 from "src/contracts/ERC20.json";
+import ERC20 from "src/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json";
+import ElvateCore from "src/artifacts/contracts/ElvateCore.sol/ElvateCore.json";
+import { ELVATE_CORE_ADDRESS } from "src/constants/addresses";
 import { isAddress } from "src/utils/address";
 import { simpleRpcProvider } from "src/utils/providers";
 import useActiveWeb3React from "./useActiveWeb3React";
@@ -83,15 +83,9 @@ export function useTokenContract(
 }
 
 export function useElvateCoreContract(withSignerIfPossible?: boolean) {
-  const { chainId } = useActiveWeb3React();
-  const n = chainId === NETWORK_MATIC_MUMBAI_TESTNET ? chainId : undefined;
-  const address = n ? ElvateCore.networks[n].address : undefined;
-
-  const contract = useContract<any>(
-    address,
+  return useContract<any>(
+    ELVATE_CORE_ADDRESS,
     ElvateCore.abi,
     withSignerIfPossible
   );
-
-  return contract;
 }

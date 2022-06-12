@@ -20,7 +20,7 @@ const ButtonEdit = ({ pair, amount, disabled = false }: ButtonEditProps) => {
       onClick={async () => {
         await getContrackCallWithSnackbar(
           contract,
-          "editSubscriptionByTokenInOut",
+          "subscribe",
           enqueueSnackbar,
           [pair.tokenIn, pair.tokenOut, ethers.utils.parseEther(amount)]
         );

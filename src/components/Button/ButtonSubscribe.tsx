@@ -26,7 +26,7 @@ const ButtonSubscribe = ({
       onClick={async () => {
         await getContrackCallWithSnackbar(
           contract,
-          "subscribeToPairByTokenInOut",
+          "subscribe",
           enqueueSnackbar,
           [pair.tokenIn, pair.tokenOut, ethers.utils.parseEther(amount)]
         );
