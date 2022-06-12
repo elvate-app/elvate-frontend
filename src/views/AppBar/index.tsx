@@ -13,7 +13,7 @@ import Connect from "./components/Connect";
 import Media from "./components/Media";
 import Navigation from "./components/Navigation";
 
-export const drawerWidth = 240;
+export const drawerWidth = 220;
 
 const DrawerRootContent = styled(FlexColumn)`
   background-color: ${(props) => props.theme.palette.background.default};
@@ -27,6 +27,7 @@ const RootContent = styled(FlexColumn)`
 
 const ElvateText = styled("img")`
   margin-top: ${(props) => props.theme.spacing(2)};
+  margin-left: ${(props) => props.theme.spacing(1)};
 `;
 
 const ElvateLogo = styled("img")`
@@ -63,7 +64,7 @@ const DrawerContent = ({ ...props }: DrawerContentProps) => {
           src={
             theme.palette.mode === "light" ? ElvateTextDark : ElvateTextLight
           }
-          width={drawerWidth / 1.6}
+          width={drawerWidth / 1.9}
         />
       </FlexCenter>
       <Spacing />
