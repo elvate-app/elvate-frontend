@@ -2,7 +2,8 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import { Box, styled } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Card, { CardProps } from "src/components/Card";
-import { Flex } from "src/components/Layout/Flex";
+import WarningChip from "src/components/Chip/Warning";
+import { Flex, FlexCenter } from "src/components/Layout/Flex";
 import { Subtitle2, Subtitle3 } from "src/components/Typo";
 import ElvatePair from "src/types/ElvatePair";
 import PairIcon from "./PairIcon";
@@ -38,7 +39,7 @@ const PairLine = ({ pair, ...props }: PairLineProps) => {
       <Flex flex={"160px 1 0"}>
         <PairIcon pair={pair} />
       </Flex>
-      <Flex flex={1} alignItems="center">
+      <Flex flex={2} alignItems="center">
         <Box flex={2} display={{ xs: "none", md: "block" }}>
           <Subtitle3>Subscribers</Subtitle3>
           <Subtitle2>{<PairSubscriptions pair={pair} />}</Subtitle2>
@@ -53,6 +54,9 @@ const PairLine = ({ pair, ...props }: PairLineProps) => {
             <PairSubscriptionAmount pair={pair} />
           </Subtitle2>
         </Box>
+        <FlexCenter flex={1}>
+          <WarningChip pair={pair} />
+        </FlexCenter>
       </Flex>
       <CustomKeyboardArrowRight />
     </Card>

@@ -1,4 +1,3 @@
-import { InfoOutlined } from "@mui/icons-material";
 import {
   Box,
   ClickAwayListener,
@@ -10,15 +9,16 @@ import {
 import { useState } from "react";
 import StyledTooltip from "./Tooltip";
 
-const StyledInfo = styled(InfoOutlined)`
+const Container = styled(Box)`
   color: ${({ theme }) => theme.palette.secondary.main};
+  display: flex;
 `;
 
 type InfoTooltipProps = {
-  iconProps?: SvgIconProps;
+  icon: SvgIconProps;
 } & Omit<TooltipProps, "children">;
 
-const InfoTooltip = ({ iconProps, ...props }: InfoTooltipProps) => {
+const InfoTooltip = ({ icon, ...props }: InfoTooltipProps) => {
   const [open, setOpen] = useState<boolean>(false);
 
   const handleTooltipClose = () => {
@@ -36,14 +36,16 @@ const InfoTooltip = ({ iconProps, ...props }: InfoTooltipProps) => {
           placement="top-end"
           TransitionComponent={Zoom}
           open={open}
+          arrow
           {...props}
         >
-          <StyledInfo
-            {...iconProps}
+          <Container
             onClick={handleTooltipOpen}
             onMouseEnter={handleTooltipOpen}
             onMouseLeave={handleTooltipClose}
-          />
+          >
+            {icon}
+          </Container>
         </StyledTooltip>
       </Box>
     </ClickAwayListener>

@@ -5,6 +5,7 @@ import { useState } from "react";
 import ButtonEdit from "src/components/Button/ButtonEdit";
 import ButtonSubscribe from "src/components/Button/ButtonSubscribe";
 import Card from "src/components/Card";
+import WarningChip from "src/components/Chip/Warning";
 import { Input } from "src/components/Inputs";
 import { Flex, FlexCenter } from "src/components/Layout/Flex";
 import Skeleton from "src/components/Skeleton";
@@ -87,6 +88,8 @@ const PairSubscription = ({ pair }: SubscriptionProps) => {
               )}
             </Subtitle1>
           </Box>
+
+          <WarningChip pair={pair} sx={{ margin: 1 }} />
 
           <InfoTooltip
             iconProps={{ sx: { margin: 1 } }}
