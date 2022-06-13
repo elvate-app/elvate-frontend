@@ -18,6 +18,7 @@ import useTokenList from "src/hooks/useToken";
 import {
   updateOwner,
   updatePairCreationFees,
+  updatePrecision,
   updateSwapFees,
   updateTotalValueDeposited,
 } from "./actions";
@@ -27,6 +28,7 @@ type ApplicationState = {
   pairCreationFees: string | undefined;
   totalValueDeposited: string | undefined;
   owner: string | undefined;
+  precision: string | undefined;
 };
 
 export default function Updater(): null {
@@ -39,6 +41,7 @@ export default function Updater(): null {
     pairCreationFees: undefined,
     totalValueDeposited: undefined,
     owner: undefined,
+    precision: undefined,
   });
   const dispatch = useDispatch();
   const allPairs = usePairs();
@@ -46,7 +49,7 @@ export default function Updater(): null {
   const tokens = useTokenList();
 
   const updateTotalValueDepositedCallback = useCallback(async () => {
-    if (!contract || !chainId || !prices || !allPairs || !multicall)
+    if (!chainId || !prices || !allPairs || !multicall || !tokens)
       return undefined;
 
     const context = tokens.reduce(
@@ -89,18 +92,22 @@ export default function Updater(): null {
       ...state,
       totalValueDeposited: res.toFixed(2),
     }));
-  }, [allPairs, contract, chainId, prices, setState]);
+  }, [allPairs, chainId, multicall, prices, setState, tokens]);
 
   const updateFeesCallback = useCallback(async () => {
-    const swapFees = await contract.swapFees();
-    const pairCreationFees = await contract.pairCreationFees();
-    const owner = await contract.owner();
+    const [swapFees, pairCreationFees, owner, precision] = await Promise.all([
+      contract.swapFees(),
+      contract.pairCreationFees(),
+      contract.owner(),
+      contract.precision(),
+    ]);
     setState((state: ApplicationState) => {
       return {
         ...state,
         swapFees: ethers.utils.formatEther(swapFees),
         pairCreationFees: ethers.utils.formatEther(pairCreationFees),
         owner: owner,
+        precision: precision.toString(),
       };
     });
   }, [contract, setState]);
@@ -125,6 +132,10 @@ export default function Updater(): null {
   useEffect(() => {
     dispatch(updateOwner(state.owner));
   }, [dispatch, state.owner]);
+
+  useEffect(() => {
+    dispatch(updatePrecision(state.precision));
+  }, [dispatch, state.precision]);
 
   return null;
 }

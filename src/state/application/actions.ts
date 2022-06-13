@@ -14,3 +14,7 @@ export const updatePairCreationFees = createAction<string | undefined>(
 export const updateOwner = createAction<string | undefined>(
   "application/updateOwner"
 );
+
+export const updatePrecision = createAction<string | undefined>(
+  "application/updatePrecision"
+);
