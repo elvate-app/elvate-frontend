@@ -1,3 +1,4 @@
+import { Help } from "@mui/icons-material";
 import { Box, Button, Grid } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
 import { BigNumber, ethers } from "ethers";
@@ -98,7 +99,7 @@ const AssetsList = () => {
                 Deposit
               </Button>
               <InfoTooltip
-                iconProps={{ sx: { marginLeft: 1 } }}
+                icon={<Help />}
                 title="MATIC deposit will automatically be converted to WMATIC"
                 arrow
               />

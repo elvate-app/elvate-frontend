@@ -1,4 +1,4 @@
-import { InfoOutlined } from "@mui/icons-material";
+import { Help } from "@mui/icons-material";
 import { alpha, Box, BoxProps, styled } from "@mui/material";
 import { Subtitle1 } from "../Typo";
 
@@ -23,7 +23,7 @@ const StyledBox = styled((props: { hover?: boolean } & BoxProps) => (
       : ""}
 `;
 
-const StyledInfo = styled(InfoOutlined)`
+const StyledInfo = styled(Help)`
   margin-right: ${({ theme }) => theme.spacing(2)};
   margin: ${({ theme }) => theme.spacing(1)};
 `;

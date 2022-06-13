@@ -1,4 +1,4 @@
-import { DoubleArrow } from "@mui/icons-material";
+import { DoubleArrow, Help } from "@mui/icons-material";
 import { Box, keyframes, Palette, styled } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 import { useState } from "react";
@@ -92,7 +92,7 @@ const PairSubscription = ({ pair }: SubscriptionProps) => {
           <WarningChip pair={pair} sx={{ margin: 1 }} />
 
           <InfoTooltip
-            iconProps={{ sx: { margin: 1 } }}
+            icon={<Help sx={{ margin: 1 }} />}
             title={`The subscription ammount will be spent to buy ${tokenOut?.symbol.toUpperCase()}`}
             arrow
           />
