@@ -125,7 +125,7 @@ export default function Updater(): null {
     contract.on("SubEdited", onElvateSubEdited);
 
     return () => {
-      // contract.removeListener("SubEdited");
+      contract.removeListener("SubEdited", onElvateSubEdited);
     };
   }, [
     library,

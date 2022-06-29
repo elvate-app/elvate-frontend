@@ -104,8 +104,8 @@ export default function Updater(): null {
     contract.on("PairTriggered", onElvatePairTriggered);
 
     return () => {
-      // contract.removeListener("PairCreated");
-      // contract.removeListener("PairTriggered");
+      contract.removeListener("PairCreated", onElvatePairCreated);
+      contract.removeListener("PairTriggered", onElvatePairTriggered);
     };
   }, [
     library,

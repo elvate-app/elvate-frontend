@@ -3,7 +3,7 @@ import ERC20Json from "@openzeppelin/contracts/build/contracts/ERC20.json";
 import { useWeb3React } from "@web3-react/core";
 import { ContractCallResults } from "ethereum-multicall";
 import { BigNumber } from "ethers";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Token } from "src/constants/tokens";
 import { useElvateCoreContract } from "src/hooks/useContract";
@@ -30,27 +30,6 @@ export default function Updater(): null {
     balance: undefined,
     timestamp: 0,
   });
-
-  const depositFilter = useMemo(
-    () =>
-      library
-        ? contract?.filters.TokenDeposited(account, null) ?? undefined
-        : undefined,
-    [account, contract, library]
-  );
-
-  const withdrewFilter = useMemo(
-    () =>
-      library
-        ? contract.filters.TokenWithdrawal(account, null) ?? undefined
-        : undefined,
-    [account, contract, library]
-  );
-
-  const pairTriggeredFilter = useMemo(
-    () => contract?.filters.PairTriggered() ?? undefined,
-    [contract]
-  );
 
   const updateLastEventTimestamp = useCallback(
     (owner: string, amount: BigNumber) => {
@@ -159,24 +138,18 @@ export default function Updater(): null {
   ]);
 
   useEffect(() => {
-    if (!depositFilter || !withdrewFilter || !pairTriggeredFilter) return;
+    if (!contract || !updateLastEventTimestamp) return;
 
-    // contract.on(depositFilter, updateLastEventTimestamp);
-    // contract.on(withdrewFilter, updateLastEventTimestamp);
-    // contract.on(pairTriggeredFilter, updateLastEventTimestamp);
+    contract.on("TokenDeposited", updateLastEventTimestamp);
+    contract.on("TokenWithdrawal", updateLastEventTimestamp);
+    contract.on("PairTriggered", updateLastEventTimestamp);
 
     return () => {
-      // contract.removeListener(depositFilter);
-      // contract.removeListener(withdrewFilter);
-      // contract.removeListener(pairTriggeredFilter);
+      contract.removeListener("TokenDeposited", updateLastEventTimestamp);
+      contract.removeListener("TokenWithdrawal", updateLastEventTimestamp);
+      contract.removeListener("PairTriggered", updateLastEventTimestamp);
     };
-  }, [
-    contract,
-    depositFilter,
-    withdrewFilter,
-    pairTriggeredFilter,
-    updateLastEventTimestamp,
-  ]);
+  }, [contract, updateLastEventTimestamp]);
 
   useEffect(() => {
     dispatch(updateDeposit(debouncedState.deposit));
