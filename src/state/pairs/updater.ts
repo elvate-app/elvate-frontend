@@ -5,7 +5,6 @@ import useActiveWeb3React from "src/hooks/useActiveWeb3React";
 import { useElvateCoreContract } from "src/hooks/useContract";
 import useDebounce from "src/hooks/useDebounce";
 import ElvatePair from "src/types/ElvatePair";
-import { getContractCall } from "src/utils/getContractCall";
 import { updatePairs } from "./actions";
 
 type PairsState = {
@@ -79,7 +78,7 @@ export default function Updater(): null {
   const fetchAllPairs = useCallback(async () => {
     if (!contract || !library) return;
 
-    const pairs: ElvatePair[] = await getContractCall(contract, "getAllPairs");
+    const pairs: ElvatePair[] = await contract.getPairs();
     setState((state: PairsState) => {
       return { ...state, pairs: pairs };
     });
@@ -101,8 +100,8 @@ export default function Updater(): null {
     contract.on("PairTriggered", onElvatePairTriggered);
 
     return () => {
-      contract.removeListener("PairCreated");
-      contract.removeListener("PairTriggered");
+      // contract.removeListener("PairCreated");
+      // contract.removeListener("PairTriggered");
     };
   }, [
     library,

@@ -1,3 +1,4 @@
+import ElvateCoreJson from "@elvate/v1-core/artifacts/contracts/ElvateCore.sol/ElvateCore.json";
 import {
   CallContext,
   CallReturnContext,
@@ -6,7 +7,6 @@ import {
 import { BigNumber } from "ethers";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import ElvateContract from "src/artifacts/contracts/ElvateCore.sol/ElvateCore.json";
 import useActiveWeb3React from "src/hooks/useActiveWeb3React";
 import { useElvateCoreContract } from "src/hooks/useContract";
 import useMulticall from "src/hooks/useMulticall";
@@ -79,7 +79,7 @@ export default function Updater(): null {
         ...a,
         {
           reference: pair.id.toString(),
-          methodName: "getPairSubs",
+          methodName: "getSubs",
           methodParameters: [pair.tokenIn, pair.tokenOut],
         },
       ],
@@ -89,7 +89,7 @@ export default function Updater(): null {
     const context = {
       reference: "subs",
       contractAddress: contract.address,
-      abi: ElvateContract.abi,
+      abi: ElvateCoreJson.abi,
       calls: calls,
     };
 
@@ -133,7 +133,7 @@ export default function Updater(): null {
     contract.on("SubEdited", onElvateSubEdited);
 
     return () => {
-      contract.removeListener("SubEdited");
+      // contract.removeListener("SubEdited");
     };
   }, [
     library,

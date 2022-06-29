@@ -1,11 +1,11 @@
+import ElvateCoreJson from "@elvate/v1-core/artifacts/contracts/ElvateCore.sol/ElvateCore.json";
+import ERC20Json from "@openzeppelin/contracts/build/contracts/ERC20.json";
 import { useWeb3React } from "@web3-react/core";
 import { ContractCallResults } from "ethereum-multicall";
 import { CallContext } from "ethereum-multicall/dist/esm/models";
 import { BigNumber } from "ethers";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import ERC20 from "src/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json";
-import ElvateContract from "src/artifacts/contracts/ElvateCore.sol/ElvateCore.json";
 import { Token } from "src/constants/tokens";
 import { useElvateCoreContract } from "src/hooks/useContract";
 import { useAllTokens } from "src/hooks/useCustomTokens";
@@ -84,7 +84,7 @@ export default function Updater(): null {
     const context = {
       reference: "deposit",
       contractAddress: contract.address,
-      abi: ElvateContract.abi,
+      abi: ElvateCoreJson.abi,
       calls: calls,
     };
 
@@ -117,7 +117,7 @@ export default function Updater(): null {
         {
           reference: v.symbol,
           contractAddress: v.address,
-          abi: ERC20.abi,
+          abi: ERC20Json.abi,
           calls: [
             {
               reference: "balanceOf",
@@ -168,14 +168,14 @@ export default function Updater(): null {
   useEffect(() => {
     if (!depositFilter || !withdrewFilter || !pairTriggeredFilter) return;
 
-    contract.on(depositFilter, updateLastEventTimestamp);
-    contract.on(withdrewFilter, updateLastEventTimestamp);
-    contract.on(pairTriggeredFilter, updateLastEventTimestamp);
+    // contract.on(depositFilter, updateLastEventTimestamp);
+    // contract.on(withdrewFilter, updateLastEventTimestamp);
+    // contract.on(pairTriggeredFilter, updateLastEventTimestamp);
 
     return () => {
-      contract.removeListener(depositFilter);
-      contract.removeListener(withdrewFilter);
-      contract.removeListener(pairTriggeredFilter);
+      // contract.removeListener(depositFilter);
+      // contract.removeListener(withdrewFilter);
+      // contract.removeListener(pairTriggeredFilter);
     };
   }, [
     contract,
