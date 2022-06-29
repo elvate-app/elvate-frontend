@@ -107,7 +107,7 @@ const Navigation = ({ onClick }: NavigationProps) => {
         iconRight={<StyledOpenInNew />}
         icon={<QueryStats />}
         onClick={() => {
-          window.open("https://stats.elvate.io");
+          // window.open("https://stats.elvate.io");
           if (onClick) onClick();
         }}
       />
