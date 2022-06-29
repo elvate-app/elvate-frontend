@@ -2,7 +2,6 @@ import ElvateCoreJson from "@elvate/v1-core/artifacts/contracts/ElvateCore.sol/E
 import ERC20Json from "@openzeppelin/contracts/build/contracts/ERC20.json";
 import { useWeb3React } from "@web3-react/core";
 import { ContractCallResults } from "ethereum-multicall";
-import { CallContext } from "ethereum-multicall/dist/esm/models";
 import { BigNumber } from "ethers";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -69,17 +68,11 @@ export default function Updater(): null {
   const updateDepositCallback = useCallback(async () => {
     if (!contract || !account || !multicall) return;
 
-    const calls = tokens.reduce(
-      (a: CallContext[], token: Token) => [
-        ...a,
-        {
-          reference: token.address,
-          methodName: "depositByOwnerByToken",
-          methodParameters: [account, token.address],
-        },
-      ],
-      []
-    );
+    const calls = tokens.map((token: Token) => ({
+      reference: token.address,
+      methodName: "depositByOwnerByToken",
+      methodParameters: [account, token.address],
+    }));
 
     const context = {
       reference: "deposit",

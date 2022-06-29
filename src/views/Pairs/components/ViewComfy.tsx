@@ -1,5 +1,5 @@
 import { Grid, styled } from "@mui/material";
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import PairCard from "./PairCard";
 
 const StyledGrid = styled(Grid)`
@@ -8,7 +8,7 @@ const StyledGrid = styled(Grid)`
 `;
 
 type ViewComfyProps = {
-  pairs: ElvatePair[] | null;
+  pairs: ElvatePair.PairStructOutput[] | null;
 };
 
 const ViewComfy = ({ pairs }: ViewComfyProps) => {
@@ -16,7 +16,7 @@ const ViewComfy = ({ pairs }: ViewComfyProps) => {
 
   return (
     <Grid container columns={{ xs: 4, md: 4, lg: 8, xl: 12 }}>
-      {pairs.map((pair: ElvatePair) => {
+      {pairs.map((pair: ElvatePair.PairStructOutput) => {
         return (
           <StyledGrid item xs={4} md={4} lg={4} key={pair.id.toNumber()}>
             <PairCard pair={pair} />

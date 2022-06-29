@@ -2,7 +2,7 @@ import { Box, styled } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import FancyBox from "src/components/Box/FancyBox";
 import { useIsSubscribed } from "src/hooks/useSubscriptions";
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import PairIcon from "./PairIcon";
 import PairStats from "./PairStats";
 
@@ -14,7 +14,7 @@ const Root = styled(Box)`
 `;
 
 type PairCardProps = {
-  pair: ElvatePair;
+  pair: ElvatePair.PairStructOutput;
 };
 
 const PairCard = ({ pair }: PairCardProps) => {

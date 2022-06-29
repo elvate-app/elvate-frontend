@@ -2,19 +2,21 @@ import { BigNumber } from "ethers";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "src/state";
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import { useSubscriptionsFromAccount } from "./useSubscriptions";
 
-export function usePairs(): ElvatePair[] | undefined {
+export function usePairs(): ElvatePair.PairStructOutput[] | undefined {
   return useSelector((state: AppState) => state.pairs.Pairs);
 }
 
-export function usePairWithId(id: BigNumber): ElvatePair | null {
+export function usePairWithId(
+  id: BigNumber
+): ElvatePair.PairStructOutput | null {
   const pairs = usePairs();
   return pairs?.filter((pair) => pair.id.eq(id))[0] || null;
 }
 
-export function usePairsSubscribed(): ElvatePair[] | null {
+export function usePairsSubscribed(): ElvatePair.PairStructOutput[] | null {
   const pairs = usePairs();
   const subscriptions = useSubscriptionsFromAccount();
 
@@ -29,7 +31,7 @@ export function usePairsSubscribed(): ElvatePair[] | null {
   return filteredPairs;
 }
 
-export function usePairsNotSubscribed(): ElvatePair[] | null {
+export function usePairsNotSubscribed(): ElvatePair.PairStructOutput[] | null {
   const pairs = usePairs();
   const pairsSubscribed = usePairsSubscribed();
 

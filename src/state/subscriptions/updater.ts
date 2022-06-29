@@ -1,6 +1,5 @@
 import ElvateCoreJson from "@elvate/v1-core/artifacts/contracts/ElvateCore.sol/ElvateCore.json";
 import {
-  CallContext,
   CallReturnContext,
   ContractCallResults,
 } from "ethereum-multicall/dist/esm/models";
@@ -11,7 +10,6 @@ import useActiveWeb3React from "src/hooks/useActiveWeb3React";
 import { useElvateCoreContract } from "src/hooks/useContract";
 import useMulticall from "src/hooks/useMulticall";
 import usePairs from "src/hooks/usePairs";
-import ElvatePair from "src/types/ElvatePair";
 import ElvateSubscription from "src/types/ElvateSubscription";
 import { updateElvateSubscriptions } from "./actions";
 
@@ -74,17 +72,11 @@ export default function Updater(): null {
   const fetchAllSubscriptions = useCallback(async () => {
     if (!contract || !multicall || !pairs) return;
 
-    const calls = pairs.reduce(
-      (a: CallContext[], pair: ElvatePair) => [
-        ...a,
-        {
-          reference: pair.id.toString(),
-          methodName: "getSubs",
-          methodParameters: [pair.tokenIn, pair.tokenOut],
-        },
-      ],
-      []
-    );
+    const calls = pairs.map((pair) => ({
+      reference: pair.id.toString(),
+      methodName: "getSubs",
+      methodParameters: [pair.tokenIn, pair.tokenOut],
+    }));
 
     const context = {
       reference: "subs",

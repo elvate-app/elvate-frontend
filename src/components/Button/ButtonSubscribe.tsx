@@ -2,12 +2,12 @@ import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
 import { useSnackbar } from "notistack";
 import { useElvateCoreContract } from "src/hooks/useContract";
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import { getContrackCallWithSnackbar } from "src/utils/getContractCall";
 import LoadingButton from "./LoadingButton";
 
 type ButtonSubscribeProps = {
-  pair: ElvatePair;
+  pair: ElvatePair.PairStructOutput;
   amount: string;
   disabled?: boolean;
 };

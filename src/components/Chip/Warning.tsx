@@ -2,8 +2,8 @@ import { WarningRounded } from "@mui/icons-material";
 import { styled, SvgIconProps } from "@mui/material";
 import { useDeposit } from "src/hooks/usePortfolio";
 import { useSubscriptionsFromAccount } from "src/hooks/useSubscriptions";
-import ElvatePair from "src/types/ElvatePair";
 import ElvateSubscription from "src/types/ElvateSubscription";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import { InfoTooltip } from "../Tooltip";
 
 const StyledWarning = styled(WarningRounded)`
@@ -11,7 +11,7 @@ const StyledWarning = styled(WarningRounded)`
 `;
 
 type WarningChipProps = {
-  pair: ElvatePair;
+  pair: ElvatePair.PairStructOutput;
 } & SvgIconProps;
 
 const WarningChip = ({ pair, ...props }: WarningChipProps) => {

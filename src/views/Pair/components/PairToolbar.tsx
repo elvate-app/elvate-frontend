@@ -12,7 +12,7 @@ import { H5, H6, Subtitle1 } from "src/components/Typo";
 import { Token } from "src/constants/tokens";
 import { useAllTokens } from "src/hooks/useCustomTokens";
 import { useSubscriptionsFromPair } from "src/hooks/useSubscriptions";
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import { getTokenByAddress } from "src/utils/token";
 import NextTriggerDate from "./NextTriggerDate";
 
@@ -23,7 +23,7 @@ const CustomArrowBack = styled(KeyboardArrowLeft)`
 `;
 
 type PairToolbarProps = {
-  pair: ElvatePair;
+  pair: ElvatePair.PairStructOutput;
 };
 
 const PairToolbar = ({ pair }: PairToolbarProps) => {
