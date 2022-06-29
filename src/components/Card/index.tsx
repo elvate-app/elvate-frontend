@@ -26,6 +26,7 @@ const StyledBox = styled((props: { hover?: boolean } & BoxProps) => (
 const StyledInfo = styled(Help)`
   margin-right: ${({ theme }) => theme.spacing(2)};
   margin: ${({ theme }) => theme.spacing(1)};
+  color: ${({ theme }) => theme.palette.secondary.main};
 `;
 
 export type CardProps = BoxProps & {
