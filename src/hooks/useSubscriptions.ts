@@ -1,67 +1,50 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { useWeb3React } from "@web3-react/core";
 import { useMemo } from "react";
-import { shallowEqual, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { AppState } from "src/state";
-import ElvateSubscription from "src/types/ElvateSubscription";
+import { ElvateSubscriptions } from "src/state/subscriptions/reducer";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 
-export function useSubscriptions(): ElvateSubscription[] | null {
+export function useSubscriptions(): ElvateSubscriptions | null {
   return useSelector(
-    (state: AppState) => state.subscriptions.elvateSubscriptions,
-    shallowEqual
+    (state: AppState) => state.subscriptions.elvateSubscriptions
   );
 }
 
-export function useSubscriptionsFromAccount(): ElvateSubscription[] | null {
+export function useSubscriptionsFromAccount(): ElvateSubscriptions | undefined {
   const { account } = useWeb3React();
-  const allSubscriptions: ElvateSubscription[] | null = useSelector(
-    (state: AppState) => state.subscriptions.elvateSubscriptions
+  const subs = useSubscriptions();
+
+  return useMemo(
+    () =>
+      new Map(
+        Array.from(subs || []).map((value) => [
+          value[0],
+          value[1].filter((sub) => sub.owner === account),
+        ])
+      ),
+    [account, subs]
   );
-
-  const filteredListSubscriptions = useMemo(() => {
-    if (!allSubscriptions) return [];
-    return allSubscriptions.filter((sub) => sub.owner === account);
-  }, [allSubscriptions, account]);
-
-  if (!allSubscriptions || !account) return null;
-
-  return filteredListSubscriptions;
 }
 
 export function useSubscriptionsFromPair(
   pairId: BigNumber
-): ElvateSubscription[] | null {
-  const allSubscriptions: ElvateSubscription[] | null = useSelector(
-    (state: AppState) => state.subscriptions.elvateSubscriptions
-  );
-
-  const filteredListSubscriptions = useMemo(() => {
-    if (!allSubscriptions) return [];
-    return allSubscriptions.filter((sub) => sub.pairId.eq(pairId));
-  }, [allSubscriptions, pairId]);
-
-  if (!allSubscriptions) return null;
-
-  return filteredListSubscriptions;
+): ElvatePair.SubStructOutput[] | undefined {
+  const subs = useSubscriptions();
+  return subs?.get(pairId.toString());
 }
 
-export function useSubscription(pairId: BigNumber): ElvateSubscription | null {
-  const { account } = useWeb3React();
-  const subscriptions = useSubscriptionsFromAccount();
-  if (!account) return null;
-
-  return subscriptions?.filter((sub) => sub.pairId.eq(pairId))[0] ?? null;
+export function useSubscription(
+  pairId: BigNumber
+): ElvatePair.SubStructOutput | undefined {
+  const subs = useSubscriptionsFromAccount();
+  return subs?.get(pairId.toString())?.[0];
 }
 
 export function useIsSubscribed(pairId: BigNumber): boolean | undefined {
-  const listSubscriptions = useSubscriptionsFromAccount();
-
-  if (!listSubscriptions) return undefined;
-  const filteredListSubscription = listSubscriptions.filter((sub) =>
-    sub.pairId.eq(pairId)
-  );
-
-  return filteredListSubscription.length > 0;
+  const sub = useSubscription(pairId);
+  return !!sub;
 }
 
 export default useSubscriptions;

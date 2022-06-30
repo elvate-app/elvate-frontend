@@ -57,10 +57,8 @@ const PairSubscription = ({ pair }: SubscriptionProps) => {
   const tokenIn: Token = getTokenByAddress(pair.tokenIn, tokens);
   const tokenOut: Token = getTokenByAddress(pair.tokenOut, tokens);
   const isSubscribed = useIsSubscribed(pair.id);
-  const subscription = useSubscription(pair.id);
-  const amountIn = isSubscribed
-    ? subscription?.amountIn ?? null
-    : BigNumber.from(0);
+  const sub = useSubscription(pair.id);
+  const amountIn = !sub ? BigNumber.from(0) : sub.amountIn;
   const [amount, setAmount] = useState<string>("");
 
   return (

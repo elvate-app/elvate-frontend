@@ -29,7 +29,8 @@ const DashboardToolbar = () => {
             <FlexColumn paddingRight={1}>
               <Subtitle1>Total Subscriptions</Subtitle1>
               <H6>
-                {subscriptions ? `${subscriptions.length} Subs` : <Skeleton />}
+                {/* TODO: get eligible subscriptions */}
+                {subscriptions ? `0 Subs` : <Skeleton />}
               </H6>
             </FlexColumn>
           </Grid>
