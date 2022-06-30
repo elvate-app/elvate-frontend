@@ -1,7 +1,7 @@
 import { WarningRounded } from "@mui/icons-material";
 import { styled, SvgIconProps } from "@mui/material";
 import { useDeposit } from "src/hooks/usePortfolio";
-import { useSubscriptionsFromAccount } from "src/hooks/useSubscriptions";
+import { useSubsFromAccount } from "src/hooks/useSubscriptions";
 import { ElvatePair } from "src/types/v1/ElvateCore";
 import { InfoTooltip } from "../Tooltip";
 
@@ -15,7 +15,7 @@ type WarningChipProps = {
 
 const WarningChip = ({ pair, ...props }: WarningChipProps) => {
   const deposit = useDeposit(pair.tokenIn);
-  const subs = useSubscriptionsFromAccount();
+  const subs = useSubsFromAccount();
   const sub = subs?.get(pair.id.toString())?.[0];
 
   if (!deposit || !sub) return <></>;

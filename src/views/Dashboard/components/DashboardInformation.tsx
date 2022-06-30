@@ -1,18 +1,44 @@
 import { Grid } from "@mui/material";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { useMemo } from "react";
 import Card from "src/components/Card";
 import Skeleton from "src/components/Skeleton";
 import { H6 } from "src/components/Typo";
 import { Token } from "src/constants/tokens";
 import { useAllTokens } from "src/hooks/useCustomTokens";
+import usePairs from "src/hooks/usePairs";
 import { useAllDeposit } from "src/hooks/usePortfolio";
 import { useAllPrices } from "src/hooks/usePrices";
+import { useEligibleSubsFromAccount } from "src/hooks/useSubscriptions";
+import { getPairById } from "src/utils/pair";
+import { getTokenByAddress } from "src/utils/token";
 
 const DashboardInformation = () => {
   const allDeposit = useAllDeposit();
   const allPrices = useAllPrices();
+  const pairs = usePairs();
   const tokens = useAllTokens();
+  const eligibleSubs = useEligibleSubsFromAccount();
+
+  const eligibleSubsLength = [...(eligibleSubs || [])].reduce(
+    (total, value) => value[1].length + total,
+    0
+  );
+
+  const totalAmountInSubs = [...(eligibleSubs || [])]
+    .reduce((total, value) => {
+      const pair = getPairById(BigNumber.from(value[0]), pairs);
+      const token = getTokenByAddress(pair?.tokenIn, tokens);
+
+      if (value[1][0])
+        return (
+          total +
+          Number(ethers.utils.formatEther(value[1][0].amountIn)) *
+            (allPrices?.[token.coingeckoId].usd || 0)
+        );
+      return total;
+    }, 0)
+    .toFixed(2);
 
   const totalDepositUSD = useMemo(() => {
     if (!allDeposit || !allPrices) return undefined;
@@ -37,9 +63,8 @@ const DashboardInformation = () => {
       <H6 fontWeight={"bold"} marginTop={2} marginBottom={1}>
         My Informations
       </H6>
-      <Grid container columns={{ xs: 4, lg: 8 }} spacing={{ xs: 2, lg: 4 }}>
-        {/* TODO: add eligible subscriptions, eligible subscription value */}
-        <Grid item xs={2}>
+      <Grid container columns={{ xs: 3, lg: 9 }} spacing={{ xs: 2, lg: 4 }}>
+        <Grid item xs={3}>
           <Card
             title="My Deposit Value"
             padding={1}
@@ -51,6 +76,44 @@ const DashboardInformation = () => {
             <H6 width="100%" textAlign="center">
               {totalDepositUSD !== undefined ? (
                 `$${totalDepositUSD}`
+              ) : (
+                <Skeleton />
+              )}
+            </H6>
+          </Card>
+        </Grid>
+
+        <Grid item xs={3}>
+          <Card
+            title="My Subs"
+            padding={1}
+            titleWrapperProps={{
+              alignItems: "center",
+              textAlign: "center",
+            }}
+          >
+            <H6 width="100%" textAlign="center">
+              {eligibleSubsLength !== undefined ? (
+                `${eligibleSubsLength} Subs`
+              ) : (
+                <Skeleton />
+              )}
+            </H6>
+          </Card>
+        </Grid>
+
+        <Grid item xs={3}>
+          <Card
+            title="My Amount In"
+            padding={1}
+            titleWrapperProps={{
+              alignItems: "center",
+              textAlign: "center",
+            }}
+          >
+            <H6 width="100%" textAlign="center">
+              {totalAmountInSubs !== undefined ? (
+                `$${totalAmountInSubs}`
               ) : (
                 <Skeleton />
               )}

@@ -1,9 +1,9 @@
 import { BigNumber } from "ethers";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
+import { useSubsFromAccount } from "src/hooks/useSubscriptions";
 import { AppState } from "src/state";
 import { ElvatePair } from "src/types/v1/ElvateCore";
-import { useSubscriptionsFromAccount } from "./useSubscriptions";
 
 export function usePairs(): ElvatePair.PairStructOutput[] | undefined {
   return useSelector((state: AppState) => state.pairs.Pairs);
@@ -20,7 +20,7 @@ export function usePairsSubscribed():
   | ElvatePair.PairStructOutput[]
   | undefined {
   const pairs = usePairs();
-  const subs = useSubscriptionsFromAccount();
+  const subs = useSubsFromAccount();
 
   const filtered = useMemo(
     () => new Map([...(subs || [])].filter((value) => value[1].length > 0)),

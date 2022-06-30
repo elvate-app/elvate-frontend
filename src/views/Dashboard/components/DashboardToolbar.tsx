@@ -5,12 +5,18 @@ import Toolbar, { ToolbarContent } from "src/components/Toolbar";
 import { H5, H6, Subtitle1 } from "src/components/Typo";
 import { useTotalDeposit } from "src/hooks/useApplication";
 import usePairs from "src/hooks/usePairs";
-import useSubscriptions from "src/hooks/useSubscriptions";
+import useSubs, { useEligibleSubs } from "src/hooks/useSubscriptions";
 
 const DashboardToolbar = () => {
   const totalDeposited = useTotalDeposit();
   const pairs = usePairs();
-  const subscriptions = useSubscriptions();
+  const subscriptions = useSubs();
+  const eligibleSubs = useEligibleSubs();
+
+  const eligibleSubsLength = [...(eligibleSubs || [])].reduce(
+    (total, value) => value[1].length + total,
+    0
+  );
 
   return (
     <>
@@ -29,8 +35,7 @@ const DashboardToolbar = () => {
             <FlexColumn paddingRight={1}>
               <Subtitle1>Total Subscriptions</Subtitle1>
               <H6>
-                {/* TODO: get eligible subscriptions */}
-                {subscriptions ? `0 Subs` : <Skeleton />}
+                {subscriptions ? `${eligibleSubsLength} Subs` : <Skeleton />}
               </H6>
             </FlexColumn>
           </Grid>

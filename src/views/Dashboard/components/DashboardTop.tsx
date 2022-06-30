@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { H6 } from "src/components/Typo";
 import usePairs from "src/hooks/usePairs";
-import useSubscriptions from "src/hooks/useSubscriptions";
+import useSubs from "src/hooks/useSubscriptions";
 import { ElvatePair } from "src/types/v1/ElvateCore";
 import { PairTriggerTimeLeft } from "src/views/Pairs/components/PairStats";
 import DashboardPairCard from "./DashboardPairCard";
@@ -32,7 +32,7 @@ const ButtonViewMore = ({ ...props }: Omit<ButtonProps, "onClick">) => {
 
 const DashboardTop = () => {
   const allPairs = usePairs();
-  const allSubscriptions = useSubscriptions();
+  const allSubscriptions = useSubs();
 
   const allTopPairs = useMemo(() => {
     if (!allSubscriptions || !allPairs) return undefined;

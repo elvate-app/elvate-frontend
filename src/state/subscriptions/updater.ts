@@ -8,11 +8,13 @@ import { useElvateCoreContract } from "src/hooks/useContract";
 import useMulticall from "src/hooks/useMulticall";
 import usePairs from "src/hooks/usePairs";
 import { ElvatePair } from "src/types/v1/ElvateCore";
-import { updateElvateSubscriptions } from "./actions";
+import { getPairById } from "src/utils/pair";
+import { updateEligibleSubs, updateSubs } from "./actions";
 import { ElvateSubscriptions } from "./reducer";
 
 type SubscriptionState = {
-  subscriptions: ElvateSubscriptions | null;
+  subs: ElvateSubscriptions | null;
+  eligibleSubs: ElvateSubscriptions | null;
 };
 
 export default function Updater(): null {
@@ -23,24 +25,39 @@ export default function Updater(): null {
   const multicall = useMulticall();
 
   const [state, setState] = useState<SubscriptionState>({
-    subscriptions: null,
+    subs: null,
+    eligibleSubs: null,
   });
 
-  const fetchAllSubscriptions = useCallback(async () => {
+  const fetchSubs = useCallback(async () => {
     if (!contract || !multicall || !pairs) return;
 
-    const calls = pairs.map((pair) => ({
+    const subsCall = pairs.map((pair) => ({
       reference: pair.id.toString(),
       methodName: "getSubs",
       methodParameters: [pair.tokenIn, pair.tokenOut],
     }));
 
-    const context = {
-      reference: "subs",
-      contractAddress: contract.address,
-      abi: ElvateCoreJson.abi,
-      calls: calls,
-    };
+    const eligibleSubsCall = pairs.map((pair) => ({
+      reference: pair.id.toString(),
+      methodName: "getEligibleSubs",
+      methodParameters: [pair.tokenIn, pair.tokenOut],
+    }));
+
+    const context = [
+      {
+        reference: "subs",
+        contractAddress: contract.address,
+        abi: ElvateCoreJson.abi,
+        calls: subsCall,
+      },
+      {
+        reference: "eligibleSubs",
+        contractAddress: contract.address,
+        abi: ElvateCoreJson.abi,
+        calls: eligibleSubsCall,
+      },
+    ];
 
     const contractCallResult: ContractCallResults = await multicall.call(
       context
@@ -61,11 +78,32 @@ export default function Updater(): null {
       )
     );
 
-    setState({ subscriptions: allSubs });
+    const allEligibleSubs: ElvateSubscriptions = new Map(
+      contractCallResult.results.eligibleSubs.callsReturnContext.map(
+        (callReturnContext) => {
+          return [
+            callReturnContext.reference,
+            callReturnContext.returnValues?.[0].map((value: any) => ({
+              ...[BigNumber.from(value[0]), value[1]],
+              amountIn: BigNumber.from(value[0]),
+              owner: value[1],
+            })),
+          ];
+        }
+      )
+    );
+
+    setState({ eligibleSubs: allEligibleSubs, subs: allSubs });
   }, [contract, multicall, pairs]);
 
   const onElvateSubEdited = useCallback(
     async (pairId: BigNumber, owner: string, amountIn: BigNumber) => {
+      const pair = getPairById(pairId, pairs);
+      const deposit = await contract.depositByOwnerByToken(
+        owner,
+        pair?.tokenIn || ""
+      );
+
       setState((state) => {
         const newSub = {
           ...[amountIn, owner],
@@ -73,50 +111,78 @@ export default function Updater(): null {
           owner: owner,
         } as ElvatePair.SubStructOutput;
 
-        if (!state.subscriptions) return { ...state };
+        if (!state.subs) return { ...state };
 
         const newSubs = [
-          ...(state.subscriptions
+          ...(state.subs
             .get(pairId.toString())
             ?.filter((sub) => sub.owner !== owner) || []),
           newSub,
         ];
 
-        const res = new Map([...state.subscriptions]);
+        const res = new Map([...state.subs]);
         res.set(pairId.toString(), newSubs);
 
-        return { subscriptions: res };
+        return { ...state, subs: res };
+      });
+
+      setState((state) => {
+        const newSub = {
+          ...[amountIn, owner],
+          amountIn: amountIn,
+          owner: owner,
+        } as ElvatePair.SubStructOutput;
+
+        if (!state.eligibleSubs) return { ...state };
+
+        const newSubs = deposit.lt(amountIn)
+          ? [
+              ...(state.eligibleSubs
+                .get(pairId.toString())
+                ?.filter((sub) => sub.owner !== owner) || []),
+            ]
+          : [
+              ...(state.eligibleSubs
+                .get(pairId.toString())
+                ?.filter((sub) => sub.owner !== owner) || []),
+              newSub,
+            ];
+
+        const res = new Map([...state.eligibleSubs]);
+        res.set(pairId.toString(), newSubs);
+
+        return { ...state, eligibleSubs: res };
       });
     },
-    [setState]
+    [contract, pairs, setState]
   );
 
   // attach/detach listeners
   useEffect(() => {
-    setState({ subscriptions: null });
+    setState({ subs: null, eligibleSubs: null });
 
     if (!library || !chainId || !contract || !pairs) return undefined;
 
-    fetchAllSubscriptions();
+    fetchSubs();
 
+    // TODO: add event on deposit / withdraw to update eligibleSubs
+    // TODO: filter on user only
     contract.on("SubEdited", onElvateSubEdited);
 
     return () => {
       contract.removeListener("SubEdited", onElvateSubEdited);
     };
-  }, [
-    library,
-    chainId,
-    contract,
-    fetchAllSubscriptions,
-    onElvateSubEdited,
-    pairs,
-  ]);
+  }, [library, chainId, contract, fetchSubs, onElvateSubEdited, pairs]);
 
   useEffect(() => {
-    if (!state.subscriptions) return;
-    dispatch(updateElvateSubscriptions(state.subscriptions));
-  }, [dispatch, state.subscriptions]);
+    if (!state.subs) return;
+    dispatch(updateSubs(state.subs));
+  }, [dispatch, state.subs]);
+
+  useEffect(() => {
+    if (!state.eligibleSubs) return;
+    dispatch(updateEligibleSubs(state.eligibleSubs));
+  }, [dispatch, state.eligibleSubs]);
 
   return null;
 }
