@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Card, { CardProps } from "src/components/Card";
 import { Spacing } from "src/components/Layout/Spacing";
 import { Subtitle2, Subtitle3 } from "src/components/Typo";
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import PairIcon from "src/views/Pairs/components/PairIcon";
 
 const StyledCard = styled(Card)`
@@ -26,7 +26,7 @@ const CustomKeyboardArrowRight = styled(KeyboardArrowRight)`
 `;
 
 type DashboardPairCardProps = {
-  pair: ElvatePair;
+  pair: ElvatePair.PairStructOutput;
   info: string;
   value: string | number | JSX.Element;
 } & Omit<CardProps, "onClick" | "hover">;

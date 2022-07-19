@@ -1,9 +1,8 @@
 import { MaxUint256 } from "@ethersproject/constants";
 import { ethers } from "ethers";
-import { useSnackbar } from "notistack";
 import { useElvateCoreContract, useTokenContract } from "src/hooks/useContract";
 import useTokenAllowance from "src/hooks/useTokenAllowance";
-import { getContrackCallWithSnackbar } from "src/utils/getContractCall";
+import useCall from "src/hooks/useCall";
 import GenericModal, { GenericModalProps } from "./GenericModal";
 
 export type DepositTokenModalProps = {
@@ -13,28 +12,19 @@ export type DepositTokenModalProps = {
 const DepositTokenModal = ({ address, ...props }: DepositTokenModalProps) => {
   const elvateContract = useElvateCoreContract(true);
   const tokenContract = useTokenContract(address, true);
-  const { enqueueSnackbar } = useSnackbar();
   const { allowance } = useTokenAllowance(address);
+  const approve = useCall(tokenContract.approve);
+  const depositToken = useCall(elvateContract.depositToken);
 
   const handleDeposit = async (amount: string, decimal: number) => {
-    await getContrackCallWithSnackbar(
-      elvateContract,
-      "depositToken",
-      enqueueSnackbar,
-      [
-        address,
-        amount.length > 0 ? ethers.utils.parseUnits(amount, decimal) : "0",
-      ]
+    await depositToken(
+      address,
+      amount.length > 0 ? ethers.utils.parseUnits(amount, decimal) : "0"
     );
   };
 
   const handleApprove = async () => {
-    await getContrackCallWithSnackbar(
-      tokenContract,
-      "approve",
-      enqueueSnackbar,
-      [elvateContract?.address, MaxUint256]
-    );
+    await approve(elvateContract?.address, MaxUint256);
   };
 
   return (

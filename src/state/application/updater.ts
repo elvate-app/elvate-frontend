@@ -1,3 +1,4 @@
+import ERC20Json from "@openzeppelin/contracts/build/contracts/ERC20.json";
 import {
   ContractCallContext,
   ContractCallResults,
@@ -5,7 +6,6 @@ import {
 import { ethers } from "ethers";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import ERC20 from "src/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json";
 import { ELVATE_CORE_ADDRESS } from "src/constants/addresses";
 import { Token } from "src/constants/tokens";
 import useActiveWeb3React from "src/hooks/useActiveWeb3React";
@@ -58,7 +58,7 @@ export default function Updater(): null {
         {
           reference: token.address,
           contractAddress: token.address,
-          abi: ERC20.abi,
+          abi: ERC20Json.abi,
           calls: [
             {
               reference: token.address,

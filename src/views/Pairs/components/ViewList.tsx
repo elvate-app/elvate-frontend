@@ -1,8 +1,8 @@
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import PairLine from "./PairLine";
 
 type ViewListProps = {
-  pairs: ElvatePair[] | null;
+  pairs: ElvatePair.PairStructOutput[] | null;
 };
 
 const ViewList = ({ pairs }: ViewListProps) => {
@@ -10,7 +10,7 @@ const ViewList = ({ pairs }: ViewListProps) => {
 
   return (
     <>
-      {pairs.map((pair: ElvatePair, index: number) => (
+      {pairs.map((pair: ElvatePair.PairStructOutput, index: number) => (
         <PairLine
           pair={pair}
           key={pair.id.toString()}

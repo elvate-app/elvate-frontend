@@ -4,12 +4,11 @@ import { useDispatch } from "react-redux";
 import useActiveWeb3React from "src/hooks/useActiveWeb3React";
 import { useElvateCoreContract } from "src/hooks/useContract";
 import useDebounce from "src/hooks/useDebounce";
-import ElvatePair from "src/types/ElvatePair";
-import { getContractCall } from "src/utils/getContractCall";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import { updatePairs } from "./actions";
 
 type PairsState = {
-  pairs: ElvatePair[] | null;
+  pairs: ElvatePair.PairStructOutput[] | null;
 };
 
 export default function Updater(): null {
@@ -25,10 +24,14 @@ export default function Updater(): null {
     (id: BigNumber, tokenIn: string, tokenOut: string) => {
       setState((state: any) => {
         if (!state.pairs) return state;
-        if (state.pairs.filter((pair: ElvatePair) => pair.id.eq(id)).length > 0)
+        if (
+          state.pairs.filter((pair: ElvatePair.PairStructOutput) =>
+            pair.id.eq(id)
+          ).length > 0
+        )
           return state;
 
-        const newPairs: ElvatePair[] = [
+        const newPairs: ElvatePair.PairStructOutput[] = [
           ...state.pairs,
           {
             id: id,
@@ -52,17 +55,17 @@ export default function Updater(): null {
         if (!state.pairs) return state;
         if (
           state.pairs.filter(
-            (pair: ElvatePair) =>
+            (pair: ElvatePair.PairStructOutput) =>
               pair.id.eq(pairId) && !pair.lastPaidAt.eq(lastPaidAt)
           ).length <= 0
         )
           return state;
 
-        let newPairs: ElvatePair[] = state.pairs.filter(
-          (pair: ElvatePair) => !pair.id.eq(pairId)
+        let newPairs: ElvatePair.PairStructOutput[] = state.pairs.filter(
+          (pair: ElvatePair.PairStructOutput) => !pair.id.eq(pairId)
         );
-        let editedPair: ElvatePair = state.pairs.filter((pair: ElvatePair) =>
-          pair.id.eq(pairId)
+        let editedPair: ElvatePair.PairStructOutput = state.pairs.filter(
+          (pair: ElvatePair.PairStructOutput) => pair.id.eq(pairId)
         )[0];
 
         editedPair = { ...editedPair, lastPaidAt: lastPaidAt };
@@ -79,7 +82,7 @@ export default function Updater(): null {
   const fetchAllPairs = useCallback(async () => {
     if (!contract || !library) return;
 
-    const pairs: ElvatePair[] = await getContractCall(contract, "getAllPairs");
+    const pairs: ElvatePair.PairStructOutput[] = await contract.getPairs();
     setState((state: PairsState) => {
       return { ...state, pairs: pairs };
     });
@@ -101,8 +104,8 @@ export default function Updater(): null {
     contract.on("PairTriggered", onElvatePairTriggered);
 
     return () => {
-      contract.removeListener("PairCreated");
-      contract.removeListener("PairTriggered");
+      contract.removeListener("PairCreated", onElvatePairCreated);
+      contract.removeListener("PairTriggered", onElvatePairTriggered);
     };
   }, [
     library,

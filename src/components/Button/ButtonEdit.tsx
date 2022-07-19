@@ -1,28 +1,26 @@
 import { ethers } from "ethers";
-import { useSnackbar } from "notistack";
 import { useElvateCoreContract } from "src/hooks/useContract";
-import ElvatePair from "src/types/ElvatePair";
-import { getContrackCallWithSnackbar } from "src/utils/getContractCall";
+import { ElvatePair } from "src/types/v1/ElvateCore";
+import useCall from "src/hooks/useCall";
 import LoadingButton from "./LoadingButton";
 
 type ButtonEditProps = {
-  pair: ElvatePair;
+  pair: ElvatePair.PairStructOutput;
   amount: string;
   disabled?: boolean;
 };
 
 const ButtonEdit = ({ pair, amount, disabled = false }: ButtonEditProps) => {
   const contract = useElvateCoreContract();
-  const { enqueueSnackbar } = useSnackbar();
+  const subscribe = useCall(contract.subscribe);
 
   return (
     <LoadingButton
       onClick={async () => {
-        await getContrackCallWithSnackbar(
-          contract,
-          "subscribe",
-          enqueueSnackbar,
-          [pair.tokenIn, pair.tokenOut, ethers.utils.parseEther(amount)]
+        await subscribe(
+          pair.tokenIn,
+          pair.tokenOut,
+          ethers.utils.parseEther(amount)
         );
       }}
       disabled={disabled}

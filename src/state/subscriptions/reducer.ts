@@ -1,18 +1,25 @@
 import { createReducer } from "@reduxjs/toolkit";
-import ElvateSubscriptions from "src/types/ElvateSubscription";
-import { updateElvateSubscriptions } from "./actions";
+import { ElvatePair } from "src/types/v1/ElvateCore";
+import { updateEligibleSubs, updateSubs } from "./actions";
+
+export type ElvateSubscriptions = Map<string, ElvatePair.SubStructOutput[]>;
 
 export interface ApplicationState {
-  readonly elvateSubscriptions: ElvateSubscriptions[];
+  readonly subs: ElvateSubscriptions;
+  readonly eligibleSubs: ElvateSubscriptions;
 }
 
 const initialState: ApplicationState = {
-  elvateSubscriptions: [],
+  subs: new Map(),
+  eligibleSubs: new Map(),
 };
 
 export default createReducer(initialState, (builder) =>
-  builder.addCase(updateElvateSubscriptions, (state, action) => {
-    const elvateSubscriptions: ElvateSubscriptions[] = action.payload;
-    state.elvateSubscriptions = elvateSubscriptions;
-  })
+  builder
+    .addCase(updateSubs, (state, action) => {
+      state.subs = action.payload;
+    })
+    .addCase(updateEligibleSubs, (state, action) => {
+      state.eligibleSubs = action.payload;
+    })
 );

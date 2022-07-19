@@ -5,7 +5,7 @@ import Card, { CardProps } from "src/components/Card";
 import WarningChip from "src/components/Chip/Warning";
 import { Flex, FlexCenter } from "src/components/Layout/Flex";
 import { Subtitle2, Subtitle3 } from "src/components/Typo";
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import PairIcon from "./PairIcon";
 import {
   PairSubscriptionAmount,
@@ -21,7 +21,7 @@ const CustomKeyboardArrowRight = styled(KeyboardArrowRight)`
 `;
 
 type PairLineProps = {
-  pair: ElvatePair;
+  pair: ElvatePair.PairStructOutput;
 } & CardProps;
 
 const PairLine = ({ pair, ...props }: PairLineProps) => {

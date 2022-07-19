@@ -2,7 +2,6 @@ import { SwapHoriz, SwapVert } from "@mui/icons-material";
 import { styled } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
-import { useSnackbar } from "notistack";
 import { useState } from "react";
 import LoadingButton from "src/components/Button/LoadingButton";
 import Card, { InfoCard } from "src/components/Card";
@@ -11,7 +10,7 @@ import { Token } from "src/constants/tokens";
 import { useOwner, usePairCreationFees } from "src/hooks/useApplication";
 import { useElvateCoreContract } from "src/hooks/useContract";
 import { useDefaultToken } from "src/hooks/useToken";
-import { getContrackCallWithSnackbar } from "src/utils/getContractCall";
+import useCall from "src/hooks/useCall";
 import SelectTokenButton from "./SelectTokenButton";
 
 const Root = styled("div")`
@@ -80,10 +79,10 @@ const CreatePair = () => {
   const [tokenIn, setTokenIn] = useState<Token>(defaultToken1);
   const [tokenOut, setTokenOut] = useState<Token>(defaultToken2);
   const contract = useElvateCoreContract(true);
-  const { enqueueSnackbar } = useSnackbar();
   const fees = usePairCreationFees();
   const owner = useOwner();
   const { account } = useWeb3React();
+  const createPair = useCall(contract.createPair);
 
   const handleSwap = () => {
     setTokenIn(tokenOut);
@@ -91,11 +90,9 @@ const CreatePair = () => {
   };
 
   const handleClick = async () => {
-    await getContrackCallWithSnackbar(contract, "createPair", enqueueSnackbar, [
-      tokenIn.address,
-      tokenOut.address,
-      { value: ethers.utils.parseEther(account === owner ? "0" : fees || "0") },
-    ]);
+    await createPair(tokenIn.address, tokenOut.address, {
+      value: ethers.utils.parseEther(account === owner ? "0" : fees || "0"),
+    });
   };
 
   return (

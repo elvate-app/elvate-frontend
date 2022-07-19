@@ -1,14 +1,17 @@
+import ElvateCoreJson from "@elvate/v1-core/artifacts/contracts/ElvateCore.sol/ElvateCore.json";
 import { AddressZero } from "@ethersproject/constants";
 import { Contract } from "@ethersproject/contracts";
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
+import ERC20Json from "@openzeppelin/contracts/build/contracts/ERC20.json";
 import { ethers } from "ethers";
 import { useMemo } from "react";
-import ERC20 from "src/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json";
-import ElvateCore from "src/artifacts/contracts/ElvateCore.sol/ElvateCore.json";
 import { ELVATE_CORE_ADDRESS } from "src/constants/addresses";
 import { isAddress } from "src/utils/address";
 import { simpleRpcProvider } from "src/utils/providers";
 import useActiveWeb3React from "./useActiveWeb3React";
+
+import { ElvateCore } from "src/types/v1";
+import { ERC20 } from "src/types/openzeppelin";
 
 // account is not optional
 export function getSigner(
@@ -46,7 +49,7 @@ export function getTokenContract(
     throw Error(`Invalid 'address' parameter '${address}'.`);
   }
 
-  return new Contract(address, ERC20.abi, signer ?? simpleRpcProvider);
+  return new Contract(address, ERC20Json.abi, signer ?? simpleRpcProvider);
 }
 
 function useContract<T extends Contract = Contract>(
@@ -77,15 +80,15 @@ export function useTokenContract(
 ) {
   return useContract<Contract>(
     isAddress(tokenAddress) ? tokenAddress : undefined,
-    ERC20.abi,
+    ERC20Json.abi,
     withSignerIfPossible
-  );
+  ) as ERC20;
 }
 
 export function useElvateCoreContract(withSignerIfPossible?: boolean) {
   return useContract<any>(
     ELVATE_CORE_ADDRESS,
-    ElvateCore.abi,
+    ElvateCoreJson.abi,
     withSignerIfPossible
-  );
+  ) as ElvateCore;
 }

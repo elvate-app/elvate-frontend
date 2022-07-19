@@ -7,7 +7,7 @@ import Skeleton from "src/components/Skeleton";
 import { Subtitle1, Subtitle2 } from "src/components/Typo";
 import { useSubscriptionsFromPair } from "src/hooks/useSubscriptions";
 import useTimeLeft from "src/hooks/useTimeLeft";
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import { getTimeLeft } from "src/utils/time";
 
 const Root = styled(Flex)`
@@ -51,7 +51,7 @@ const StatContainer = styled((props: StatContainerProps & CommonProps) => (
 `;
 
 type PairStatsProps = {
-  pair: ElvatePair;
+  pair: ElvatePair.PairStructOutput;
 };
 
 export const PairTriggerTimeLeft = ({ pair }: PairStatsProps) => {
@@ -74,7 +74,7 @@ export const PairSubscriptionAmount = ({ pair }: PairStatsProps) => {
 };
 
 type PairStatsContainerProps = {
-  pair: ElvatePair;
+  pair: ElvatePair.PairStructOutput;
   separator?: boolean;
 };
 

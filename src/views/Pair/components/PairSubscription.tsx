@@ -14,7 +14,7 @@ import { Subtitle1, Subtitle2 } from "src/components/Typo";
 import { Token } from "src/constants/tokens";
 import { useAllTokens } from "src/hooks/useCustomTokens";
 import { useIsSubscribed, useSubscription } from "src/hooks/useSubscriptions";
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import { isNumber } from "src/utils/number";
 import { getTokenByAddress } from "src/utils/token";
 import PairTokenDescription from "./PairTokenDescription";
@@ -49,7 +49,7 @@ const CustomInput = styled(Input)`
 `;
 
 type SubscriptionProps = {
-  pair: ElvatePair;
+  pair: ElvatePair.PairStructOutput;
 };
 
 const PairSubscription = ({ pair }: SubscriptionProps) => {
@@ -57,10 +57,8 @@ const PairSubscription = ({ pair }: SubscriptionProps) => {
   const tokenIn: Token = getTokenByAddress(pair.tokenIn, tokens);
   const tokenOut: Token = getTokenByAddress(pair.tokenOut, tokens);
   const isSubscribed = useIsSubscribed(pair.id);
-  const subscription = useSubscription(pair.id);
-  const amountIn = isSubscribed
-    ? subscription?.amountIn ?? null
-    : BigNumber.from(0);
+  const sub = useSubscription(pair.id);
+  const amountIn = !sub ? BigNumber.from(0) : sub.amountIn;
   const [amount, setAmount] = useState<string>("");
 
   return (

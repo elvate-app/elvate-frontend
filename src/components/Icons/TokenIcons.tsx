@@ -3,7 +3,7 @@ import { CommonProps } from "@mui/material/OverridableComponent";
 import { FlexCenterColumn } from "src/components/Layout/Flex";
 import { Token } from "src/constants/tokens";
 import { useAllTokens } from "src/hooks/useCustomTokens";
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import { getTokenByAddress } from "src/utils/token";
 
 const Img = styled("img")`
@@ -33,7 +33,7 @@ const TokenIconRight = styled(TokenIcon)`
 `;
 
 type TokenIconsProps = {
-  pair: ElvatePair;
+  pair: ElvatePair.PairStructOutput;
 };
 
 const TokenIcons = ({ pair }: TokenIconsProps) => {

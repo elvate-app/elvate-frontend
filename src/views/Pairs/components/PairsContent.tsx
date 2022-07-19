@@ -10,7 +10,7 @@ import { useAllTokens } from "src/hooks/useCustomTokens";
 import { usePairsNotSubscribed, usePairsSubscribed } from "src/hooks/usePairs";
 import { useDefaultView } from "src/hooks/useSettings";
 import { updateDefaultView } from "src/state/settings/actions";
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import { getTokenByAddress } from "src/utils/token";
 import ViewComfy from "./ViewComfy";
 import ViewList from "./ViewList";
@@ -50,7 +50,7 @@ export const PairsContent = () => {
       pairsSubscribed
         ? pairsSubscribed
             .filter(
-              (pair: ElvatePair) =>
+              (pair: ElvatePair.PairStructOutput) =>
                 getTokenByAddress(pair.tokenIn, tokens)
                   .symbol.toUpperCase()
                   .includes(search.toUpperCase()) ||
@@ -60,7 +60,12 @@ export const PairsContent = () => {
                 pair.tokenIn.toUpperCase().includes(search.toUpperCase()) ||
                 pair.tokenOut.toUpperCase().includes(search.toUpperCase())
             )
-            .sort((a: ElvatePair, b: ElvatePair) => a.id.sub(b.id).toNumber())
+            .sort(
+              (
+                a: ElvatePair.PairStructOutput,
+                b: ElvatePair.PairStructOutput
+              ) => a.id.sub(b.id).toNumber()
+            )
         : null,
     [pairsSubscribed, search, tokens]
   );
@@ -70,7 +75,7 @@ export const PairsContent = () => {
       pairsNotSubscribed
         ? pairsNotSubscribed
             .filter(
-              (pair: ElvatePair) =>
+              (pair: ElvatePair.PairStructOutput) =>
                 getTokenByAddress(pair.tokenIn, tokens)
                   .symbol.toUpperCase()
                   .includes(search.toUpperCase()) ||
@@ -80,7 +85,12 @@ export const PairsContent = () => {
                 pair.tokenIn.toUpperCase().includes(search.toUpperCase()) ||
                 pair.tokenOut.toUpperCase().includes(search.toUpperCase())
             )
-            .sort((a: ElvatePair, b: ElvatePair) => a.id.sub(b.id).toNumber())
+            .sort(
+              (
+                a: ElvatePair.PairStructOutput,
+                b: ElvatePair.PairStructOutput
+              ) => a.id.sub(b.id).toNumber()
+            )
         : null,
     [pairsNotSubscribed, search, tokens]
   );

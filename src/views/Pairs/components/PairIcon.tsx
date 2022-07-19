@@ -4,7 +4,7 @@ import { Flex, FlexColumn } from "src/components/Layout/Flex";
 import { Subtitle1, Subtitle2 } from "src/components/Typo";
 import { Token } from "src/constants/tokens";
 import { useAllTokens } from "src/hooks/useCustomTokens";
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import { getTokenByAddress } from "src/utils/token";
 
 const Root = styled(Flex)`
@@ -13,7 +13,7 @@ const Root = styled(Flex)`
 `;
 
 type PairIconProps = {
-  pair: ElvatePair;
+  pair: ElvatePair.PairStructOutput;
 } & BoxProps;
 
 const PairIcon = ({ pair, ...props }: PairIconProps) => {

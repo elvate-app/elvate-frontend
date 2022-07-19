@@ -1,6 +1,10 @@
 import { createAction } from "@reduxjs/toolkit";
-import ElvateSubscription from "src/types/ElvateSubscription";
+import { ElvateSubscriptions } from "./reducer";
 
-export const updateElvateSubscriptions = createAction<ElvateSubscription[]>(
-  "application/updateElvateSubscriptions"
+export const updateSubs = createAction<ElvateSubscriptions>(
+  "application/updateSubs"
+);
+
+export const updateEligibleSubs = createAction<ElvateSubscriptions>(
+  "application/updateEligibleSubs"
 );

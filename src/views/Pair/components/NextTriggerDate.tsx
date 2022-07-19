@@ -3,7 +3,7 @@ import { Flex, FlexCenter } from "src/components/Layout/Flex";
 import Skeleton from "src/components/Skeleton";
 import { H6 } from "src/components/Typo";
 import useTimeLeft from "src/hooks/useTimeLeft";
-import ElvatePair from "src/types/ElvatePair";
+import { ElvatePair } from "src/types/v1/ElvateCore";
 import { getTimeLeft } from "src/utils/time";
 
 const Letter = styled(FlexCenter)`
@@ -34,7 +34,7 @@ const Spacing = styled("div")`
 `;
 
 type PairToolbarProps = {
-  pair: ElvatePair;
+  pair: ElvatePair.PairStructOutput;
 };
 
 const NextTriggerDate = ({ pair }: PairToolbarProps) => {
