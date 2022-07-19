@@ -36,12 +36,14 @@ export function useEligibleSubsFromAccount(): ElvateSubscriptions | undefined {
 
   return useMemo(
     () =>
-      new Map(
-        Array.from(subs || []).map((value) => [
-          value[0],
-          value[1].filter((sub) => sub.owner === account),
-        ])
-      ),
+      account
+        ? new Map(
+            Array.from(subs || []).map((value) => [
+              value[0],
+              value[1].filter((sub) => sub.owner === account),
+            ])
+          )
+        : undefined,
     [account, subs]
   );
 }

@@ -20,28 +20,37 @@ const DashboardInformation = () => {
   const tokens = useAllTokens();
   const eligibleSubs = useEligibleSubsFromAccount();
 
-  const eligibleSubsLength = [...(eligibleSubs || [])].reduce(
-    (total, value) => value[1].length + total,
-    0
+  const eligibleSubsLength = useMemo(
+    () =>
+      eligibleSubs
+        ? [...eligibleSubs].reduce((total, value) => value[1].length + total, 0)
+        : undefined,
+    [eligibleSubs]
   );
 
-  const totalAmountInSubs = [...(eligibleSubs || [])]
-    .reduce((total, value) => {
-      const pair = getPairById(BigNumber.from(value[0]), pairs);
-      const token = getTokenByAddress(pair?.tokenIn, tokens);
+  const totalAmountInSubs = useMemo(
+    () =>
+      eligibleSubs
+        ? [...eligibleSubs]
+            .reduce((total, value) => {
+              const pair = getPairById(BigNumber.from(value[0]), pairs);
+              const token = getTokenByAddress(pair?.tokenIn, tokens);
 
-      if (value[1][0])
-        return (
-          total +
-          Number(ethers.utils.formatEther(value[1][0].amountIn)) *
-            (allPrices?.[token.coingeckoId].usd || 0)
-        );
-      return total;
-    }, 0)
-    .toFixed(2);
+              if (value[1][0])
+                return (
+                  total +
+                  Number(ethers.utils.formatEther(value[1][0].amountIn)) *
+                    (allPrices?.[token.coingeckoId].usd || 0)
+                );
+              return total;
+            }, 0)
+            .toFixed(2)
+        : undefined,
+    [allPrices, eligibleSubs, pairs, tokens]
+  );
 
   const totalDepositUSD = useMemo(() => {
-    if (!allDeposit || !allPrices) return undefined;
+    if (!allDeposit || !allPrices || !eligibleSubs) return undefined;
 
     return tokens
       .reduce((a: number, v: Token) => {
@@ -56,7 +65,12 @@ const DashboardInformation = () => {
         return a + tokenValue;
       }, 0)
       .toFixed(2);
-  }, [allDeposit, allPrices, tokens]);
+  }, [allDeposit, allPrices, eligibleSubs, tokens]);
+
+  const loading =
+    eligibleSubsLength === undefined ||
+    totalAmountInSubs === undefined ||
+    totalDepositUSD === undefined;
 
   return (
     <>
@@ -74,11 +88,7 @@ const DashboardInformation = () => {
             }}
           >
             <H6 width="100%" textAlign="center">
-              {totalDepositUSD !== undefined ? (
-                `$${totalDepositUSD}`
-              ) : (
-                <Skeleton />
-              )}
+              {!loading ? `$${totalDepositUSD}` : <Skeleton />}
             </H6>
           </Card>
         </Grid>
@@ -93,11 +103,7 @@ const DashboardInformation = () => {
             }}
           >
             <H6 width="100%" textAlign="center">
-              {eligibleSubsLength !== undefined ? (
-                `${eligibleSubsLength} Subs`
-              ) : (
-                <Skeleton />
-              )}
+              {!loading ? `${eligibleSubsLength} Subs` : <Skeleton />}
             </H6>
           </Card>
         </Grid>
@@ -112,11 +118,7 @@ const DashboardInformation = () => {
             }}
           >
             <H6 width="100%" textAlign="center">
-              {totalAmountInSubs !== undefined ? (
-                `$${totalAmountInSubs}`
-              ) : (
-                <Skeleton />
-              )}
+              {!loading ? `$${totalAmountInSubs}` : <Skeleton />}
             </H6>
           </Card>
         </Grid>
