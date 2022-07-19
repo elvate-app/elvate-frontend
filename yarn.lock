@@ -1133,10 +1133,10 @@
   dependencies:
     postcss-value-parser "^4.2.0"
 
-"@elvate/v1-core@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@elvate/v1-core/-/v1-core-0.1.0.tgz#024473b106730af59b7e79e3fa0648a37e97ebad"
-  integrity sha512-rOBgyN6LY8mA7/QKRQD4VtHTmOAldTsKiI4Tnh7+3xksyE44NnsmUJod3dMI5EwknjfJiAn2KMts3jOqqcHd5Q==
+"@elvate/v1-core@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@elvate/v1-core/-/v1-core-1.0.0.tgz#644117f27320a1b04750360065203ed47403f86d"
+  integrity sha512-creEF4Ivsgd4O7OKCYoJVvmSXiieik7l5jfOXSUtBeTBiVTs7ilnTF98BB9kJbNvee8+K52p/KjzkHnbY4kqHg==
 
 "@emotion/babel-plugin@^11.7.1":
   version "11.7.2"

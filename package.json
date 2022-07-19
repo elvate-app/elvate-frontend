@@ -4,7 +4,7 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
-    "@elvate/v1-core": "^0.1.0",
+    "@elvate/v1-core": "^1.0.0",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@ethersproject/abi": "^5.5.0",
