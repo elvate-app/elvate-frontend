@@ -1,9 +1,8 @@
 import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
-import { useSnackbar } from "notistack";
 import { useElvateCoreContract } from "src/hooks/useContract";
 import { ElvatePair } from "src/types/v1/ElvateCore";
-import { getContrackCallWithSnackbar } from "src/utils/getContractCall";
+import useCall from "src/hooks/useCall";
 import LoadingButton from "./LoadingButton";
 
 type ButtonSubscribeProps = {
@@ -19,16 +18,15 @@ const ButtonSubscribe = ({
 }: ButtonSubscribeProps) => {
   const { account } = useWeb3React();
   const contract = useElvateCoreContract();
-  const { enqueueSnackbar } = useSnackbar();
+  const subscribe = useCall(contract.subscribe);
 
   return (
     <LoadingButton
       onClick={async () => {
-        await getContrackCallWithSnackbar(
-          contract,
-          "subscribe",
-          enqueueSnackbar,
-          [pair.tokenIn, pair.tokenOut, ethers.utils.parseEther(amount)]
+        await subscribe(
+          pair.tokenIn,
+          pair.tokenOut,
+          ethers.utils.parseEther(amount)
         );
       }}
       disabled={disabled || !account}

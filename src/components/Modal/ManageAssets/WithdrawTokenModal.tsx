@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
-import { useSnackbar } from "notistack";
 import { useElvateCoreContract } from "src/hooks/useContract";
-import { getContrackCallWithSnackbar } from "src/utils/getContractCall";
+import useCall from "src/hooks/useCall";
 import GenericModal, { GenericModalProps } from "./GenericModal";
 
 export type WithdrawTokenModalProps = {
@@ -10,17 +9,12 @@ export type WithdrawTokenModalProps = {
 
 const WithdrawTokenModal = ({ address, ...props }: WithdrawTokenModalProps) => {
   const contract = useElvateCoreContract(true);
-  const { enqueueSnackbar } = useSnackbar();
+  const withdrawToken = useCall(contract.withdrawToken);
 
   const handleWithdraw = async (amount: string, decimal: number) => {
-    await getContrackCallWithSnackbar(
-      contract,
-      "withdrawToken",
-      enqueueSnackbar,
-      [
-        address,
-        ethers.utils.parseUnits(amount.length > 0 ? amount : "0", decimal),
-      ]
+    await withdrawToken(
+      address,
+      ethers.utils.parseUnits(amount.length > 0 ? amount : "0", decimal)
     );
   };
 

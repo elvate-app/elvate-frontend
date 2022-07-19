@@ -1,7 +1,6 @@
 import { Zero } from "@ethersproject/constants";
 import { useWeb3React } from "@web3-react/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getContractCall } from "src/utils/getContractCall";
 import { useElvateCoreContract, useTokenContract } from "./useContract";
 
 // return null if not fetched
@@ -17,17 +16,14 @@ export const useTokenAllowance = (tokenAddress: string) => {
     setAllowance(null);
   }, [account, tokenAddress]);
 
-  const filter = useMemo(() => contract?.filters.Approval(account), [
-    account,
-    contract,
-  ]);
+  const filter = useMemo(
+    () => contract?.filters.Approval(account),
+    [account, contract]
+  );
 
   const fetchContractCall = useCallback(async () => {
     if (!account) return null;
-    const res = await getContractCall(contract, "allowance", [
-      account,
-      address,
-    ]);
+    const res = await contract.allowance(account, address);
 
     if (!res) return null;
     if (res.eq(Zero)) setAllowance(false);
