@@ -3,7 +3,7 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import reducer from "./reducer";
 
-const PERSISTED_KEYS: string[] = ["settings", "tokens"];
+const PERSISTED_KEYS: string[] = ["settings", "tokens", "transactions"];
 
 const persistConfig = {
   key: "root",

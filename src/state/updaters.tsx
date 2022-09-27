@@ -4,6 +4,7 @@ import PortfolioUpdater from "src/state/portfolio/updater";
 import PriceUpdater from "src/state/prices/updater";
 import SubscriptionsUpdater from "src/state/subscriptions/updater";
 import TokensUpdater from "src/state/tokens/updater";
+import TransactionsUpdater from "src/state/transactions/updater";
 
 export const StateUpdater = () => (
   <>
@@ -13,5 +14,6 @@ export const StateUpdater = () => (
     <PriceUpdater />
     <SubscriptionsUpdater />
     <TokensUpdater />
+    <TransactionsUpdater />
   </>
 );

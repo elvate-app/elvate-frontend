@@ -1,14 +1,22 @@
 import { ContractReceipt, ContractTransaction } from "ethers";
+import { useDispatch } from "react-redux";
 import useSnackbar from "src/hooks/useSnackbar";
+import { addTransaction } from "src/state/transactions/actions";
 
 const WAIT_BLOCK = 1;
 
 const useCall = <T extends (...args: any[]) => any>(f: T) => {
   const { hash, error } = useSnackbar();
+  const dispatch = useDispatch();
 
   return async (...args: Parameters<T>) => {
     try {
       const t: ContractTransaction = await f(...args);
+      dispatch(
+        addTransaction({
+          transactionHash: t.hash,
+        })
+      );
       hash(t.hash, "transaction sent", "info");
 
       await t.wait(WAIT_BLOCK).then((receipt: ContractReceipt) => {
