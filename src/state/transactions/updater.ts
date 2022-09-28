@@ -33,7 +33,9 @@ export default function Updater(): null {
 
       library.getTransactionReceipt(hash).then((r) => {
         if (r) {
-          dispatch(updateTransaction(r));
+          dispatch(
+            updateTransaction({ label: transactions[hash].label, ...r })
+          );
         }
       });
     });

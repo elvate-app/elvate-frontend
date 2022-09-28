@@ -1,11 +1,11 @@
 import { AccountBalanceWallet, RotateRight } from "@mui/icons-material";
 import { keyframes, Paper, styled } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
+import { useModal } from "mui-modal-provider";
 import { useMemo } from "react";
-import { CopyTooltip, OpenInNewTooltip } from "src/components/Tooltip";
+import WalletModal from "src/components/Modal/Wallet";
 import { Subtitle2 } from "src/components/Typo";
 import { NETWORK_MATIC_MUMBAI_TESTNET } from "src/constants/chain";
-import { useExplorer } from "src/hooks/useExplorer";
 import { useTransactions } from "src/hooks/useTransactions";
 
 function animation() {
@@ -37,24 +37,36 @@ const StyledBox = styled(Subtitle2)`
 
 const PaperAccount = () => {
   const { account } = useWeb3React();
-  const explorer = useExplorer();
+  const { showModal } = useModal();
   const smallAddress =
     account?.substring(0, 7) +
     "..." +
     account?.substring(account.length - 7, account.length);
 
   const transactions = useTransactions();
+
   const pendingTransactions = useMemo(
     () =>
-      Object.keys(transactions[NETWORK_MATIC_MUMBAI_TESTNET]).filter(
-        (hash: string) =>
-          !transactions[NETWORK_MATIC_MUMBAI_TESTNET][hash]?.blockHash
-      ),
+      Object.keys(transactions).length > 0
+        ? Object.keys(transactions[NETWORK_MATIC_MUMBAI_TESTNET]).filter(
+            (hash: string) =>
+              !transactions[NETWORK_MATIC_MUMBAI_TESTNET][hash]?.blockHash
+          )
+        : [],
     [transactions]
   );
 
   return (
-    <StyledPaper>
+    <StyledPaper
+      onClick={() => {
+        const modal = showModal(WalletModal, {
+          title: `Your Wallet`,
+          onCancel: () => {
+            modal.hide();
+          },
+        });
+      }}
+    >
       {pendingTransactions.length > 0 ? (
         <StyledRotateRight />
       ) : (

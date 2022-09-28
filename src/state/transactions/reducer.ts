@@ -4,6 +4,7 @@ import { addTransaction, updateTransaction } from "./actions";
 
 export interface TransactionDetails {
   transactionHash: string;
+  label: string;
   to?: string;
   from?: string;
   blockHash?: string;
@@ -23,7 +24,7 @@ export default createReducer(initialState, (builder) =>
   builder
     .addCase(
       addTransaction,
-      (transactions, { payload: { transactionHash } }) => {
+      (transactions, { payload: { transactionHash, label } }) => {
         console.log("addTransaction");
         console.log(transactionHash);
 
@@ -32,7 +33,7 @@ export default createReducer(initialState, (builder) =>
         }
 
         const txs = transactions[NETWORK_MATIC_MUMBAI_TESTNET] ?? {};
-        txs[transactionHash] = { transactionHash };
+        txs[transactionHash] = { transactionHash, label };
         transactions[NETWORK_MATIC_MUMBAI_TESTNET] = txs;
       }
     )
@@ -43,6 +44,7 @@ export default createReducer(initialState, (builder) =>
         {
           payload: {
             transactionHash,
+            label,
             to,
             from,
             blockHash,
@@ -61,6 +63,7 @@ export default createReducer(initialState, (builder) =>
         const txs = transactions[NETWORK_MATIC_MUMBAI_TESTNET] ?? {};
         txs[transactionHash] = {
           transactionHash,
+          label,
           to,
           from,
           blockHash,

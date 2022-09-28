@@ -82,7 +82,7 @@ const CreatePair = () => {
   const fees = usePairCreationFees();
   const owner = useOwner();
   const { account } = useWeb3React();
-  const createPair = useCall(contract.createPair);
+  const createPair = useCall(contract.createPair, "Create Pair");
 
   const handleSwap = () => {
     setTokenIn(tokenOut);

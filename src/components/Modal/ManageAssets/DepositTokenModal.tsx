@@ -13,8 +13,8 @@ const DepositTokenModal = ({ address, ...props }: DepositTokenModalProps) => {
   const elvateContract = useElvateCoreContract(true);
   const tokenContract = useTokenContract(address, true);
   const { allowance } = useTokenAllowance(address);
-  const approve = useCall(tokenContract.approve);
-  const depositToken = useCall(elvateContract.depositToken);
+  const approve = useCall(tokenContract.approve, "Approve");
+  const depositToken = useCall(elvateContract.depositToken, "Deposit Token");
 
   const handleDeposit = async (amount: string, decimal: number) => {
     await depositToken(

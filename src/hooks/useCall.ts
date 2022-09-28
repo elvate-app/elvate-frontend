@@ -5,7 +5,7 @@ import { addTransaction } from "src/state/transactions/actions";
 
 const WAIT_BLOCK = 1;
 
-const useCall = <T extends (...args: any[]) => any>(f: T) => {
+const useCall = <T extends (...args: any[]) => any>(f: T, label: string) => {
   const { hash, error } = useSnackbar();
   const dispatch = useDispatch();
 
@@ -15,6 +15,7 @@ const useCall = <T extends (...args: any[]) => any>(f: T) => {
       dispatch(
         addTransaction({
           transactionHash: t.hash,
+          label: label,
         })
       );
       hash(t.hash, "transaction sent", "info");
