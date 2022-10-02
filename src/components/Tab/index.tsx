@@ -1,5 +1,6 @@
-import { Tab, Tabs } from "@mui/material";
-import React, { useState } from "react";
+import { Button, ButtonProps } from "@mui/material";
+import { styled } from "@mui/system";
+import { useState } from "react";
 import { FlexCenter } from "../Layout/Flex";
 
 interface TabPanelProps {
@@ -7,6 +8,21 @@ interface TabPanelProps {
   index: number;
   value: number;
 }
+
+const StyledButton = styled(
+  (props: { index: number; last: number } & ButtonProps) => (
+    <Button {...props} />
+  )
+)`
+  flex: 1;
+  border-radius: 0px;
+  border-top-left-radius: ${({ index }) => (index === 0 ? "5px" : "0px")};
+  border-bottom-left-radius: ${({ index }) => (index === 0 ? "5px" : "0px")};
+  border-top-right-radius: ${({ index, last }) =>
+    index === last ? "5px" : "0px"};
+  border-bottom-right-radius: ${({ index, last }) =>
+    index === last ? "5px" : "0px"};
+`;
 
 function a11yProps(index: number) {
   return {
@@ -39,28 +55,27 @@ type CustomTabsProps = {
 const CustomTabs = ({ labels, childrens }: CustomTabsProps) => {
   const [value, setValue] = useState(0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (newValue: number) => {
     setValue(newValue);
   };
 
   return (
     <>
       <FlexCenter>
-        <Tabs
-          sx={{ flex: 1 }}
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-        >
+        <FlexCenter flex={1} padding={2}>
           {labels.map((label, index) => (
-            <Tab
-              label={label}
+            <StyledButton
+              index={index}
+              last={labels.length - 1}
+              onClick={() => handleChange(index)}
               {...a11yProps(index)}
-              sx={{ flex: 1 }}
-              key={`tab-${index}`}
-            />
+              key={`button-${index}`}
+              variant={index === value ? "contained" : "outlined"}
+            >
+              {label}
+            </StyledButton>
           ))}
-        </Tabs>
+        </FlexCenter>
       </FlexCenter>
       {childrens.map((children, index) => {
         return (
