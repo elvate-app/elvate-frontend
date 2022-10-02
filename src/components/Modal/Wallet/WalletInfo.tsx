@@ -1,13 +1,15 @@
-import { styled } from "@mui/material";
+import { Button, styled } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
 import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { FlexCenter, FlexColumn } from "src/components/Layout/Flex";
 import CustomSkeleton from "src/components/Skeleton";
 import { CopyTooltip, OpenInNewTooltip } from "src/components/Tooltip";
 import { AnimatedNumber, Subtitle1, Subtitle2 } from "src/components/Typo";
 import { useExplorer } from "src/hooks/useExplorer";
 import useTokenList from "src/hooks/useToken";
+import { updateAutoLogin } from "src/state/settings/actions";
 
 const Root = styled(FlexColumn)`
   padding: ${(props) => props.theme.spacing(2)};
@@ -30,7 +32,7 @@ const Img = styled("img")`
 `;
 
 const WalletInfo = () => {
-  const { account, library } = useWeb3React();
+  const { account, library, deactivate } = useWeb3React();
   const explorer = useExplorer();
   const smallAddress =
     account?.substring(0, 16) +
@@ -38,12 +40,22 @@ const WalletInfo = () => {
     account?.substring(account.length - 16, account.length);
   const [balance, setBalance] = useState<BigNumber | undefined>(undefined);
   const tokens = useTokenList();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!library || !account) return;
 
     library.getBalance(account).then((res: BigNumber) => setBalance(res));
   }, [account, library]);
+
+  const handleDisconnect = async () => {
+    try {
+      deactivate();
+    } catch (ex) {
+      console.log(ex);
+    }
+    dispatch(updateAutoLogin("disconnected"));
+  };
 
   return (
     <Root>
@@ -71,6 +83,16 @@ const WalletInfo = () => {
           )}{" "}
         </Subtitle1>
       </AddressContainer>
+
+      <FlexCenter>
+        <Button
+          variant="contained"
+          sx={{ marginTop: 4, marginBottom: 1 }}
+          onClick={handleDisconnect}
+        >
+          disconnect
+        </Button>
+      </FlexCenter>
     </Root>
   );
 };
