@@ -56,7 +56,12 @@ const TransactionsInfo = () => {
   const dispatch = useDispatch();
 
   const transactions: Array<any> = useMemo(
-    () => Object.entries(allTransactions?.[NETWORK_MATIC_MUMBAI_TESTNET]) || [],
+    () =>
+      Object.entries(
+        allTransactions && allTransactions[NETWORK_MATIC_MUMBAI_TESTNET]
+          ? allTransactions[NETWORK_MATIC_MUMBAI_TESTNET]
+          : {}
+      ) || [],
     [allTransactions]
   );
 
