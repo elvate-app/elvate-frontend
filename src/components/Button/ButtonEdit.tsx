@@ -12,7 +12,7 @@ type ButtonEditProps = {
 
 const ButtonEdit = ({ pair, amount, disabled = false }: ButtonEditProps) => {
   const contract = useElvateCoreContract();
-  const subscribe = useCall(contract.subscribe);
+  const subscribe = useCall(contract.subscribe, "Subscribe");
 
   return (
     <LoadingButton

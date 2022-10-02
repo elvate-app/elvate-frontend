@@ -18,7 +18,7 @@ const ButtonSubscribe = ({
 }: ButtonSubscribeProps) => {
   const { account } = useWeb3React();
   const contract = useElvateCoreContract();
-  const subscribe = useCall(contract.subscribe);
+  const subscribe = useCall(contract.subscribe, "Subscribe");
 
   return (
     <LoadingButton

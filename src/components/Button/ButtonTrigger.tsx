@@ -14,7 +14,7 @@ const ButtonTrigger = ({ pair }: ButtonSubscribeProps) => {
   const contract = useElvateCoreContract();
   const { time } = useTimeLeft(pair.lastPaidAt.toNumber());
   const disabled: boolean = time > 0;
-  const triggerPair = useCall(contract.triggerPair);
+  const triggerPair = useCall(contract.triggerPair, "Trigger Pair");
 
   return (
     <LoadingButton

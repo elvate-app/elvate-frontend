@@ -6,6 +6,7 @@ import prices from "./prices/reducer";
 import settings from "./settings/reducer";
 import subscriptions from "./subscriptions/reducer";
 import tokens from "./tokens/reducer";
+import transactions from "./transactions/reducer";
 
 const reducer = combineReducers({
   application,
@@ -15,6 +16,7 @@ const reducer = combineReducers({
   settings,
   subscriptions,
   tokens,
+  transactions,
 });
 
 export default reducer;

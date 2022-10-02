@@ -9,7 +9,7 @@ export type WithdrawTokenModalProps = {
 
 const WithdrawTokenModal = ({ address, ...props }: WithdrawTokenModalProps) => {
   const contract = useElvateCoreContract(true);
-  const withdrawToken = useCall(contract.withdrawToken);
+  const withdrawToken = useCall(contract.withdrawToken, "Withdraw Token");
 
   const handleWithdraw = async (amount: string, decimal: number) => {
     await withdrawToken(

@@ -10,7 +10,7 @@ export type DepositModalProps = GenericModalProps;
 const DepositModal = ({ ...props }: DepositModalProps) => {
   const { account } = useWeb3React();
   const elvateContract = useElvateCoreContract(true);
-  const deposit = useCall(elvateContract.deposit);
+  const deposit = useCall(elvateContract.deposit, "Deposit");
 
   const handleDeposit = async (amount: string, decimal: number) => {
     await deposit({
