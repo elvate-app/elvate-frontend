@@ -49,6 +49,17 @@ const Root = styled(FlexColumn)`
   background-color: ${(props) => props.theme.palette.background.darker};
 `;
 
+const Container = styled(FlexCenter)`
+  background-color: ${(props) => props.theme.palette.background.dark};
+  margin-top: ${(props) => props.theme.spacing(2)};
+  padding: ${(props) => props.theme.spacing(2)};
+  padding-bottom: 0px;
+  flex-direction: column;
+  justify-content: center;
+  alignitems: center;
+  border-radius: 5px;
+`;
+
 const TransactionsInfo = () => {
   const [page, setPage] = useState<number>(1);
   const allTransactions = useTransactions();
@@ -98,35 +109,38 @@ const TransactionsInfo = () => {
           <></>
         )}
       </FlexCenter>
-      {transactions.length > 0 ? (
-        transactionsToDisplay.map((transaction, index) => (
-          <Flex
-            key={index}
-            justifyContent="center"
-            alignItems="center"
-            marginTop={2}
-          >
-            {!transaction[1].blockHash ? (
-              <StyledRotateRight />
-            ) : transaction[1].status === 1 ? (
-              <StyledCheckCircleOutline />
-            ) : (
-              <StyledAddCircleOutline />
-            )}
-            <Subtitle1 flex={1}>{transaction[1].label}</Subtitle1>
-            <CopyTooltip
-              value={transaction[1].transactionHash}
-              iconProps={{ sx: { marginLeft: 1 } }}
-            />
-            <OpenInNewTooltip
-              value={explorer + "tx/" + transaction[1].transactionHash}
-              iconProps={{ sx: { marginLeft: 1 } }}
-            />
-          </Flex>
-        ))
-      ) : (
-        <Subtitle2 sx={{ marginTop: 2 }}>No Transactions found</Subtitle2>
-      )}
+      <Container>
+        {transactions.length > 0 ? (
+          transactionsToDisplay.map((transaction, index) => (
+            <Flex
+              key={index}
+              justifyContent="center"
+              alignItems="center"
+              marginBottom={2}
+              width="100%"
+            >
+              {!transaction[1].blockHash ? (
+                <StyledRotateRight />
+              ) : transaction[1].status === 1 ? (
+                <StyledCheckCircleOutline />
+              ) : (
+                <StyledAddCircleOutline />
+              )}
+              <Subtitle1 flex={1}>{transaction[1].label}</Subtitle1>
+              <CopyTooltip
+                value={transaction[1].transactionHash}
+                iconProps={{ sx: { marginLeft: 1 } }}
+              />
+              <OpenInNewTooltip
+                value={explorer + "tx/" + transaction[1].transactionHash}
+                iconProps={{ sx: { marginLeft: 1 } }}
+              />
+            </Flex>
+          ))
+        ) : (
+          <Subtitle2>No Transactions found</Subtitle2>
+        )}
+      </Container>
 
       <FlexCenter flex={1} marginTop={2}>
         <Pagination
