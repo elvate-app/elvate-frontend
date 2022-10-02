@@ -8,3 +8,7 @@ export const addTransaction = createAction<TransactionDetails>(
 export const updateTransaction = createAction<TransactionDetails>(
   "transactions/updateTransaction"
 );
+
+export const clearAllTransactions = createAction(
+  "transactions/clearAllTransactions"
+);

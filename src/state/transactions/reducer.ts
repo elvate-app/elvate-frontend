@@ -1,6 +1,10 @@
 import { createReducer } from "@reduxjs/toolkit";
 import { NETWORK_MATIC_MUMBAI_TESTNET } from "src/constants/chain";
-import { addTransaction, updateTransaction } from "./actions";
+import {
+  addTransaction,
+  clearAllTransactions,
+  updateTransaction,
+} from "./actions";
 
 export interface TransactionDetails {
   transactionHash: string;
@@ -22,6 +26,9 @@ const initialState: TransactionState = {};
 
 export default createReducer(initialState, (builder) =>
   builder
+    .addCase(clearAllTransactions, (state, actions) => {
+      state[NETWORK_MATIC_MUMBAI_TESTNET] = {};
+    })
     .addCase(
       addTransaction,
       (transactions, { payload: { transactionHash, label } }) => {

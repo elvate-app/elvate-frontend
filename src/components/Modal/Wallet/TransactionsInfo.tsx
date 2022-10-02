@@ -3,13 +3,15 @@ import {
   CheckCircleOutline,
   RotateRight,
 } from "@mui/icons-material";
-import { keyframes, styled } from "@mui/material";
+import { Button, keyframes, styled } from "@mui/material";
+import { useDispatch } from "react-redux";
 import { Flex, FlexColumn } from "src/components/Layout/Flex";
 import { CopyTooltip, OpenInNewTooltip } from "src/components/Tooltip";
 import { Subtitle1, Subtitle2 } from "src/components/Typo";
 import { NETWORK_MATIC_MUMBAI_TESTNET } from "src/constants/chain";
 import { useExplorer } from "src/hooks/useExplorer";
 import { useTransactions } from "src/hooks/useTransactions";
+import { clearAllTransactions } from "src/state/transactions/actions";
 
 function animation() {
   return keyframes`
@@ -42,11 +44,16 @@ const Root = styled(FlexColumn)`
 const TransactionsInfo = () => {
   const transactions = useTransactions();
   const explorer = useExplorer();
+  const dispatch = useDispatch();
+
+  const handleClearTransactions = () => {
+    dispatch(clearAllTransactions());
+  };
 
   return (
     <Root>
       <Subtitle2>Transactions:</Subtitle2>
-      {Object.keys(transactions).length > 0 ? (
+      {Object.keys(transactions?.[NETWORK_MATIC_MUMBAI_TESTNET]).length > 0 ? (
         Object.keys(transactions[NETWORK_MATIC_MUMBAI_TESTNET]).map(
           (hash, index) => (
             <Flex
@@ -86,7 +93,20 @@ const TransactionsInfo = () => {
           )
         )
       ) : (
-        <Subtitle2>No Transactions found</Subtitle2>
+        <Subtitle2 sx={{ marginTop: 2 }}>No Transactions found</Subtitle2>
+      )}
+
+      {Object.keys(transactions?.[NETWORK_MATIC_MUMBAI_TESTNET]).length > 0 ? (
+        <Button
+          color="primary"
+          variant="contained"
+          sx={{ margin: 2 }}
+          onClick={handleClearTransactions}
+        >
+          Clear
+        </Button>
+      ) : (
+        <></>
       )}
     </Root>
   );
