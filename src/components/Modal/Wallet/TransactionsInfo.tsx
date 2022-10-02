@@ -3,7 +3,8 @@ import {
   CheckCircleOutline,
   RotateRight,
 } from "@mui/icons-material";
-import { keyframes, styled } from "@mui/material";
+import { keyframes, Pagination, styled } from "@mui/material";
+import { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Flex, FlexCenter, FlexColumn } from "src/components/Layout/Flex";
 import { CopyTooltip, OpenInNewTooltip } from "src/components/Tooltip";
@@ -12,6 +13,8 @@ import { NETWORK_MATIC_MUMBAI_TESTNET } from "src/constants/chain";
 import { useExplorer } from "src/hooks/useExplorer";
 import { useTransactions } from "src/hooks/useTransactions";
 import { clearAllTransactions } from "src/state/transactions/actions";
+
+const TRANSACTION_PER_PAGE = 5;
 
 function animation() {
   return keyframes`
@@ -47,20 +50,42 @@ const Root = styled(FlexColumn)`
 `;
 
 const TransactionsInfo = () => {
-  const transactions = useTransactions();
+  const [page, setPage] = useState<number>(1);
+  const allTransactions = useTransactions();
   const explorer = useExplorer();
   const dispatch = useDispatch();
+
+  const transactions: Array<any> = useMemo(
+    () => Object.entries(allTransactions?.[NETWORK_MATIC_MUMBAI_TESTNET]) || [],
+    [allTransactions]
+  );
+
+  const pages = useMemo(
+    () => Math.ceil(transactions.length / TRANSACTION_PER_PAGE),
+    [transactions]
+  );
+
+  const handlePageChange = (index: number) => {
+    setPage(index);
+  };
 
   const handleClearTransactions = () => {
     dispatch(clearAllTransactions());
   };
 
+  const transactionsToDisplay = useMemo(
+    () =>
+      [...transactions]
+        .reverse()
+        .splice(TRANSACTION_PER_PAGE * (page - 1), TRANSACTION_PER_PAGE),
+    [transactions, page]
+  );
+
   return (
     <Root>
       <FlexCenter>
         <Subtitle2 sx={{ flex: 1 }}>Transactions:</Subtitle2>
-        {Object.keys(transactions?.[NETWORK_MATIC_MUMBAI_TESTNET]).length >
-        0 ? (
+        {transactions.length > 0 ? (
           <StyledClearButton onClick={handleClearTransactions}>
             CLEAR
           </StyledClearButton>
@@ -68,48 +93,43 @@ const TransactionsInfo = () => {
           <></>
         )}
       </FlexCenter>
-      {Object.keys(transactions?.[NETWORK_MATIC_MUMBAI_TESTNET]).length > 0 ? (
-        Object.keys(transactions[NETWORK_MATIC_MUMBAI_TESTNET]).map(
-          (hash, index) => (
-            <Flex
-              key={index}
-              justifyContent="center"
-              alignItems="center"
-              marginTop={2}
-            >
-              {!transactions[NETWORK_MATIC_MUMBAI_TESTNET][hash].blockHash ? (
-                <StyledRotateRight />
-              ) : transactions[NETWORK_MATIC_MUMBAI_TESTNET][hash].status ===
-                1 ? (
-                <StyledCheckCircleOutline />
-              ) : (
-                <StyledAddCircleOutline />
-              )}
-              <Subtitle1 flex={1}>
-                {transactions[NETWORK_MATIC_MUMBAI_TESTNET][hash].label}
-              </Subtitle1>
-              <CopyTooltip
-                value={
-                  transactions[NETWORK_MATIC_MUMBAI_TESTNET][hash]
-                    .transactionHash
-                }
-                iconProps={{ sx: { marginLeft: 1 } }}
-              />
-              <OpenInNewTooltip
-                value={
-                  explorer +
-                  "tx/" +
-                  transactions[NETWORK_MATIC_MUMBAI_TESTNET][hash]
-                    .transactionHash
-                }
-                iconProps={{ sx: { marginLeft: 1 } }}
-              />
-            </Flex>
-          )
-        )
+      {transactions.length > 0 ? (
+        transactionsToDisplay.map((transaction, index) => (
+          <Flex
+            key={index}
+            justifyContent="center"
+            alignItems="center"
+            marginTop={2}
+          >
+            {!transaction[1].blockHash ? (
+              <StyledRotateRight />
+            ) : transaction[1].status === 1 ? (
+              <StyledCheckCircleOutline />
+            ) : (
+              <StyledAddCircleOutline />
+            )}
+            <Subtitle1 flex={1}>{transaction[1].label}</Subtitle1>
+            <CopyTooltip
+              value={transaction[1].transactionHash}
+              iconProps={{ sx: { marginLeft: 1 } }}
+            />
+            <OpenInNewTooltip
+              value={explorer + "tx/" + transaction[1].transactionHash}
+              iconProps={{ sx: { marginLeft: 1 } }}
+            />
+          </Flex>
+        ))
       ) : (
         <Subtitle2 sx={{ marginTop: 2 }}>No Transactions found</Subtitle2>
       )}
+
+      <FlexCenter flex={1} marginTop={2}>
+        <Pagination
+          count={pages}
+          page={page}
+          onChange={(event, index) => handlePageChange(index)}
+        />
+      </FlexCenter>
     </Root>
   );
 };
