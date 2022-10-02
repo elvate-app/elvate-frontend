@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { NETWORK_MATIC_MUMBAI_TESTNET } from "src/constants/chain";
 import useActiveWeb3React from "src/hooks/useActiveWeb3React";
-import useDebounce from "src/hooks/useDebounce";
+import useBlock from "src/hooks/useBlock";
 import { useTransactions } from "src/hooks/useTransactions";
 import { updateTransaction } from "./actions";
 
@@ -13,17 +13,8 @@ export default function Updater(): null {
     [allTransactions]
   );
   const { library } = useActiveWeb3React();
-  const [blockNumber, setBlockNumber] = useState<number>(0);
+  const { blockNumber } = useBlock();
   const dispatch = useDispatch();
-
-  const onBlock = useCallback(
-    (block: number) => {
-      setBlockNumber(block);
-    },
-    [setBlockNumber]
-  );
-
-  const blockNumberDebounce = useDebounce(blockNumber, 1000);
 
   useEffect(() => {
     if (!library) return;
@@ -39,16 +30,7 @@ export default function Updater(): null {
         }
       });
     });
-  }, [blockNumberDebounce, library, transactions, dispatch]);
-
-  useEffect(() => {
-    if (!library) return;
-
-    library.on("block", onBlock);
-    return () => {
-      library.removeListener("block", onBlock);
-    };
-  }, [library, onBlock]);
+  }, [blockNumber, library, transactions, dispatch]);
 
   return null;
 }
