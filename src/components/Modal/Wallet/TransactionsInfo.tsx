@@ -3,11 +3,11 @@ import {
   CheckCircleOutline,
   RotateRight,
 } from "@mui/icons-material";
-import { Button, keyframes, styled } from "@mui/material";
+import { keyframes, styled } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { Flex, FlexColumn } from "src/components/Layout/Flex";
+import { Flex, FlexCenter, FlexColumn } from "src/components/Layout/Flex";
 import { CopyTooltip, OpenInNewTooltip } from "src/components/Tooltip";
-import { Subtitle1, Subtitle2 } from "src/components/Typo";
+import { Subtitle1, Subtitle2, Subtitle3 } from "src/components/Typo";
 import { NETWORK_MATIC_MUMBAI_TESTNET } from "src/constants/chain";
 import { useExplorer } from "src/hooks/useExplorer";
 import { useTransactions } from "src/hooks/useTransactions";
@@ -36,6 +36,11 @@ const StyledAddCircleOutline = styled(AddCircleOutline)`
   transform: rotate(45deg);
 `;
 
+const StyledClearButton = styled(Subtitle3)`
+  color: ${(props) => props.theme.palette.primary.main};
+  cursor: pointer;
+`;
+
 const Root = styled(FlexColumn)`
   padding: ${(props) => props.theme.spacing(2)};
   background-color: ${(props) => props.theme.palette.background.darker};
@@ -52,7 +57,17 @@ const TransactionsInfo = () => {
 
   return (
     <Root>
-      <Subtitle2>Transactions:</Subtitle2>
+      <FlexCenter>
+        <Subtitle2 sx={{ flex: 1 }}>Transactions:</Subtitle2>
+        {Object.keys(transactions?.[NETWORK_MATIC_MUMBAI_TESTNET]).length >
+        0 ? (
+          <StyledClearButton onClick={handleClearTransactions}>
+            CLEAR
+          </StyledClearButton>
+        ) : (
+          <></>
+        )}
+      </FlexCenter>
       {Object.keys(transactions?.[NETWORK_MATIC_MUMBAI_TESTNET]).length > 0 ? (
         Object.keys(transactions[NETWORK_MATIC_MUMBAI_TESTNET]).map(
           (hash, index) => (
@@ -94,19 +109,6 @@ const TransactionsInfo = () => {
         )
       ) : (
         <Subtitle2 sx={{ marginTop: 2 }}>No Transactions found</Subtitle2>
-      )}
-
-      {Object.keys(transactions?.[NETWORK_MATIC_MUMBAI_TESTNET]).length > 0 ? (
-        <Button
-          color="primary"
-          variant="contained"
-          sx={{ margin: 2 }}
-          onClick={handleClearTransactions}
-        >
-          Clear
-        </Button>
-      ) : (
-        <></>
       )}
     </Root>
   );
